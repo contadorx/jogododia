@@ -6,32 +6,42 @@ import { CHAVES, chaveDaSala, gravar, jogoDaSalaGuardada, ler, salasGuardadas } 
 import {
   CATEGORIAS_STOP,
   CONFIG_PADRAO,
+  MAX_JOGADORES,
   RODADAS_OPCOES,
   TEMPOS_OPCOES,
+  abrirProxima,
   anular,
   atual,
+  bicho,
   comecar,
+  conferirCategoria,
   configValida,
   ehMsgStop,
   faseDe,
   ficarPronto,
+  meuIndice,
   nomeDaCategoria,
   normalizar,
   novaPartidaStop,
   parar,
   placarStop,
-  pontosDaCategoria,
+  podeSeguirSem,
   problema,
+  quemJoga,
   receberStop,
   reenviarStop,
   revancheStop,
+  seguirSem,
   sortearLetra,
+  votosParaAnular,
   type Config,
+  type Contexto,
   type IdCategoria,
   type MsgStop,
   type PartidaStop,
   type PassoStop,
   type Respostas,
+  type RodadaStop,
 } from "@/lib/jogos/stop";
 import { evento } from "@/lib/metricas";
 import {
@@ -46,14 +56,28 @@ import {
   type EstadoConexao,
   type Membro,
 } from "@/lib/sala";
-import { Seta } from "../Icones";
+import { Desfazer, Seta } from "../Icones";
 import { PRINCIPAL, SECUNDARIO } from "../batalha/Montagem";
 import { BarraDaSala, ConviteDaSala, Conversa, SalaDeOutroJogo } from "./PecasDaSala";
+import { useTelaAcesa } from "./useTelaAcesa";
 
 const ID = "stop";
 type Modo = "mesmo" | "distancia";
 
+/** No papel, o site só guarda os pontos: dá para mais gente que à distância. */
+const MAX_PAPEL = 8;
+
 // ------------------------------------------------------------------------------- peças comuns
+
+/** Cor de cada jogador (pela posição): um ponto ao lado do nome, para achar cada um nas listas. */
+const CORES = ["#2f55c9", "#c8381f", "#23804f", "#d99a00", "#7a4cc2", "#c2417e", "#8a5a2b", "#1b8a9a"];
+const Ponto = ({ i }: { i: number }) => (
+  <span aria-hidden="true" className="inline-block h-3 w-3 shrink-0 rounded-full" style={{ background: CORES[i % CORES.length] }} />
+);
+
+const maiuscula = (t: string) => t.charAt(0).toUpperCase() + t.slice(1);
+/** "a Onça, o Tatu e você" */
+const juntar = (itens: string[]) => (itens.length <= 1 ? (itens[0] ?? "") : `${itens.slice(0, -1).join(", ")} e ${itens[itens.length - 1]}`);
 
 /** A letra da rodada, grande. Na primeira vez, gira umas letras antes de parar (sorteio). */
 function Letra({ letra, girar }: { letra: string; girar: boolean }) {
@@ -171,18 +195,44 @@ function EscolherConfig({ config, aoMudar }: { config: Config; aoMudar: (c: Conf
   );
 }
 
-const Placar = ({ rotulos, pontos, fim }: { rotulos: [string, string]; pontos: [number, number]; fim?: boolean }) => (
-  <div className={`grid grid-cols-2 gap-2 ${fim ? "" : ""}`}>
-    {[0, 1].map((i) => (
-      <div key={i} className={`flex flex-col items-center rounded-2xl p-3 ${i === 0 ? "bg-azul-claro" : "bg-fogo-claro"}`}>
-        <span className="text-sm font-bold">{rotulos[i]}</span>
-        <span className="font-display text-[30px] font-extrabold leading-tight">{pontos[i]}</span>
-      </div>
-    ))}
-  </div>
-);
+type Linha = { chave: number; nome: string; pontos: number; destaque?: boolean; nota?: string };
 
-const REGRA = "Palavra que vale e é diferente da do outro: 10 pontos. Igual à do outro: 5. Em branco ou que não vale: 0.";
+/** Placar de todos, do que tem mais pontos para o que tem menos (empatados ficam no mesmo lugar). */
+function PlacarLista({ titulo, linhas }: { titulo: string; linhas: Linha[] }) {
+  const ordem = [...linhas].sort((a, b) => b.pontos - a.pontos);
+  return (
+    <section aria-label={titulo} className="flex flex-col gap-1.5">
+      <h2 className="m-0 text-[15px] font-bold">{titulo}</h2>
+      <ol className="m-0 flex list-none flex-col gap-1.5 p-0">
+        {ordem.map((l) => (
+          <li key={l.chave} className={`flex items-center gap-2.5 rounded-2xl px-3 py-2 ${l.destaque ? "bg-azul-claro" : "bg-painel"}`}>
+            <span className="w-7 shrink-0 text-sm font-bold text-suave">{ordem.findIndex((x) => x.pontos === l.pontos) + 1}º</span>
+            <Ponto i={l.chave} />
+            <span className="min-w-0 flex-1 font-bold">
+              {l.nome}
+              {l.nota ? <span className="font-normal text-suave"> · {l.nota}</span> : null}
+            </span>
+            <span className="font-display text-[22px] font-extrabold leading-none">{l.pontos}</span>
+          </li>
+        ))}
+      </ol>
+    </section>
+  );
+}
+
+const REGRA = "Palavra que vale e que ninguém mais escreveu: 10 pontos. Igual à de alguém: 5. Em branco ou que não vale: 0.";
+
+const BotaoStop = ({ habilitado, aoTocar }: { habilitado: boolean; aoTocar: () => void }) => (
+  <button
+    type="button"
+    disabled={!habilitado}
+    onClick={aoTocar}
+    className="min-h-[72px] rounded-3xl font-display text-[34px] font-extrabold tracking-wide text-white shadow-md active:scale-[0.98] disabled:opacity-40"
+    style={{ background: "var(--color-fogo)" }}
+  >
+    STOP!
+  </button>
+);
 
 // ------------------------------------------------------------------------------- jogar (modos)
 
@@ -217,8 +267,8 @@ export function JogarStop({ conversa }: { conversa: readonly string[] }) {
   if (!pronto) return <div aria-busy="true" className="min-h-[60vh]" />;
 
   const MODOS: { id: Modo; nome: string; explica: string }[] = [
-    { id: "mesmo", nome: "No mesmo aparelho", explica: "Cada um escreve no seu papel. O celular sorteia a letra, marca o tempo e ajuda a somar os pontos." },
-    { id: "distancia", nome: "À distância", explica: "Cada um na sua casa, digitando no próprio celular. O site compara as respostas." },
+    { id: "mesmo", nome: "No mesmo aparelho", explica: `Cada um escreve no seu papel (até ${MAX_PAPEL} jogadores). O celular sorteia a letra, marca o tempo e soma os pontos.` },
+    { id: "distancia", nome: "À distância", explica: `Cada um na sua casa, digitando no próprio celular (até ${MAX_JOGADORES} jogadores). O site compara as respostas.` },
   ];
 
   return (
@@ -259,27 +309,50 @@ export function JogarStop({ conversa }: { conversa: readonly string[] }) {
 
 // ------------------------------------------------------------------------------- no papel
 
-type Escolha = "diferentes" | "iguais" | "so1" | "so2" | "nenhum";
-const ESCOLHAS: { id: Escolha; rotulo: string; pontos: [number, number] }[] = [
-  { id: "diferentes", rotulo: "Os dois, diferentes", pontos: [10, 10] },
-  { id: "iguais", rotulo: "Os dois, iguais", pontos: [5, 5] },
-  { id: "so1", rotulo: "Só o jogador 1", pontos: [10, 0] },
-  { id: "so2", rotulo: "Só o jogador 2", pontos: [0, 10] },
-  { id: "nenhum", rotulo: "Nenhum", pontos: [0, 0] },
-];
-
-type RodadaPapel = { letra: string; inicio: number; parado: boolean; escolhas: Partial<Record<IdCategoria, Escolha>>; somada: boolean };
-type JogoPapel = { v: 1; config: Config | null; rodadas: RodadaPapel[] };
+/** `pontos[k]`: os toques de +10 e +5 do jogador k na rodada (um por palavra que valeu). */
+type RodadaPapel = { letra: string; inicio: number; parado: boolean; pontos: number[][]; somada: boolean };
+/** `nomes`: vazio é "Jogador 1", "Jogador 2"… Os nomes ficam só neste aparelho. */
+type JogoPapel = { v: 2; config: Config | null; nomes: string[]; rodadas: RodadaPapel[] };
 const CHAVE_PAPEL = "jdd.local.stop";
+const NOVO_PAPEL: JogoPapel = { v: 2, config: null, nomes: ["", ""], rodadas: [] };
+
+/** O jogo guardado neste aparelho. O formato de antes (dois jogadores, um toque por categoria) vira o novo. */
+function lerPapel(): JogoPapel | null {
+  const s = ler<Record<string, unknown>>(CHAVE_PAPEL);
+  if (!s || !Array.isArray(s.rodadas) || !(s.config === null || configValida(s.config))) return null;
+  if (s.v === 2) {
+    const nomes = s.nomes;
+    if (!Array.isArray(nomes) || nomes.length < 2 || nomes.length > MAX_PAPEL || !nomes.every((n) => typeof n === "string")) return null;
+    const rodadasOk = (s.rodadas as RodadaPapel[]).every((r) => !!r && typeof r.letra === "string" && Array.isArray(r.pontos) && r.pontos.length === nomes.length);
+    return rodadasOk ? (s as unknown as JogoPapel) : null;
+  }
+  if (s.v === 1) {
+    const valor: Record<string, [number, number]> = { diferentes: [10, 10], iguais: [5, 5], so1: [10, 0], so2: [0, 10], nenhum: [0, 0] };
+    const antigas = s.rodadas as { letra: string; inicio: number; parado: boolean; somada: boolean; escolhas?: Record<string, string> }[];
+    return {
+      v: 2,
+      config: s.config as Config | null,
+      nomes: ["", ""],
+      rodadas: antigas.map((r) => ({
+        letra: r.letra,
+        inicio: r.inicio,
+        parado: r.parado,
+        somada: r.somada,
+        pontos: [0, 1].map((k) => Object.values(r.escolhas ?? {}).flatMap((e) => (valor[e]?.[k] ? [valor[e][k]] : []))),
+      })),
+    };
+  }
+  return null;
+}
 
 function StopNoPapel({ conversa }: { conversa: readonly string[] }) {
-  const [jogo, setJogo] = useState<JogoPapel>({ v: 1, config: null, rodadas: [] });
+  const [jogo, setJogo] = useState<JogoPapel>(NOVO_PAPEL);
   const [rascunho, setRascunho] = useState<Config>(CONFIG_PADRAO);
   const [carregado, setCarregado] = useState(false);
 
   useEffect(() => {
-    const salvo = ler<JogoPapel>(CHAVE_PAPEL);
-    if (salvo?.v === 1 && Array.isArray(salvo.rodadas) && (salvo.config === null || configValida(salvo.config))) {
+    const salvo = lerPapel();
+    if (salvo) {
       setJogo(salvo);
       if (salvo.config) setRascunho(salvo.config);
     }
@@ -292,26 +365,17 @@ function StopNoPapel({ conversa }: { conversa: readonly string[] }) {
 
   if (!carregado) return <div aria-busy="true" className="min-h-[50vh]" />;
 
-  const { config, rodadas } = jogo;
+  const { config, rodadas, nomes } = jogo;
+  const nomeDe = (k: number) => nomes[k]?.trim() || `Jogador ${k + 1}`;
+  const somaDe = (toques: readonly number[] | undefined) => (toques ?? []).reduce((a, b) => a + b, 0);
   const r = rodadas[rodadas.length - 1];
-  const pontosDa = (x: RodadaPapel): [number, number] =>
-    (config?.categorias ?? []).reduce<[number, number]>(
-      (s, c) => {
-        const e = ESCOLHAS.find((o) => o.id === x.escolhas[c]);
-        return e ? [s[0] + e.pontos[0], s[1] + e.pontos[1]] : s;
-      },
-      [0, 0],
-    );
-  const total = rodadas.filter((x) => x.somada).reduce<[number, number]>((s, x) => {
-    const p = pontosDa(x);
-    return [s[0] + p[0], s[1] + p[1]];
-  }, [0, 0]);
+  const total = nomes.map((_, k) => rodadas.filter((x) => x.somada).reduce((s, x) => s + somaDe(x.pontos[k]), 0));
   const terminou = !!config && rodadas.length === config.total && !!r?.somada;
 
   const novaRodada = (cfg: Config, anteriores: RodadaPapel[]) => {
     const letra = sortearLetra(anteriores.map((x) => x.letra));
     if (anteriores.length === 0) evento("partida_iniciada", { jogo: ID, modo: "mesmo-aparelho" });
-    mudar({ v: 1, config: cfg, rodadas: [...anteriores, { letra, inicio: Date.now(), parado: false, escolhas: {}, somada: false }] });
+    mudar({ ...jogo, config: cfg, rodadas: [...anteriores, { letra, inicio: Date.now(), parado: false, pontos: nomes.map(() => []), somada: false }] });
   };
   const atualizar = (x: RodadaPapel) => mudar({ ...jogo, rodadas: [...rodadas.slice(0, -1), x] });
 
@@ -320,6 +384,39 @@ function StopNoPapel({ conversa }: { conversa: readonly string[] }) {
     return (
       <div className="flex flex-col gap-5">
         <EscolherConfig config={rascunho} aoMudar={setRascunho} />
+        <fieldset className="m-0 flex flex-col gap-2 border-0 p-0">
+          <legend className="mb-2 text-[15px] font-bold">Jogadores (de 2 a {MAX_PAPEL})</legend>
+          {nomes.map((nome, k) => (
+            <div key={k} className="flex items-center gap-2">
+              <Ponto i={k} />
+              <input
+                value={nome}
+                onChange={(e) => mudar({ ...jogo, nomes: nomes.map((n, j) => (j === k ? e.target.value.slice(0, 20) : n)) })}
+                aria-label={`Nome do jogador ${k + 1}`}
+                placeholder={`Jogador ${k + 1}`}
+                autoComplete="off"
+                maxLength={20}
+                className="min-h-11 w-full min-w-0 flex-1 rounded-2xl border border-borda px-4 text-[17px]"
+              />
+              {nomes.length > 2 ? (
+                <button
+                  type="button"
+                  onClick={() => mudar({ ...jogo, nomes: nomes.filter((_, j) => j !== k) })}
+                  aria-label={`Tirar ${nomeDe(k)}`}
+                  className="min-h-11 px-1 text-[15px] font-bold text-suave underline underline-offset-2"
+                >
+                  Tirar
+                </button>
+              ) : null}
+            </div>
+          ))}
+          {nomes.length < MAX_PAPEL ? (
+            <button type="button" onClick={() => mudar({ ...jogo, nomes: [...nomes, ""] })} className={`${SECUNDARIO} self-start`}>
+              Mais um jogador
+            </button>
+          ) : null}
+          <p className="m-0 text-sm text-suave">Os nomes são opcionais e ficam só neste aparelho.</p>
+        </fieldset>
         <p className="m-0 text-sm text-suave">Cada um precisa de papel e lápis. Escrevam as categorias em colunas, uma linha por rodada.</p>
         <button type="button" onClick={() => novaRodada(rascunho, [])} className={PRINCIPAL}>
           Sortear a primeira letra
@@ -331,26 +428,22 @@ function StopNoPapel({ conversa }: { conversa: readonly string[] }) {
 
   // ---------------- fim
   if (terminou) {
-    const vencedor = total[0] === total[1] ? null : total[0] > total[1] ? 1 : 2;
+    const maior = Math.max(...total);
+    const vencedores = nomes.map((_, k) => k).filter((k) => total[k] === maior);
     return (
       <div className="flex flex-col gap-4">
         <div role="status" className="flex flex-col gap-1 rounded-2xl bg-azul p-4 text-white">
-          <p className="aparece m-0 font-display text-[24px] font-extrabold">{vencedor ? `Vitória do jogador ${vencedor}!` : "Empate!"}</p>
+          <p className="aparece m-0 font-display text-[24px] font-extrabold">
+            {vencedores.length === 1 ? `${nomeDe(vencedores[0])} venceu!` : `Empate entre ${juntar(vencedores.map(nomeDe))}!`}
+          </p>
           <p className="m-0 text-[15px] text-white/90">
-            {total[0]} a {total[1]} pontos, em {config.total} rodadas.
+            {maior} pontos{vencedores.length > 1 ? " cada" : ""}, em {config.total} rodadas.
           </p>
         </div>
-        <Placar rotulos={["Jogador 1", "Jogador 2"]} pontos={total} fim />
+        <PlacarLista titulo="Placar final" linhas={nomes.map((_, k) => ({ chave: k, nome: nomeDe(k), pontos: total[k] }))} />
         <Conversa perguntas={conversa} />
         <div className="flex flex-col gap-2 sm:flex-row">
-          <button
-            type="button"
-            onClick={() => {
-              evento("partida_terminada", { jogo: ID, modo: "mesmo-aparelho" });
-              mudar({ v: 1, config: null, rodadas: [] });
-            }}
-            className={`${PRINCIPAL} sm:flex-1`}
-          >
+          <button type="button" onClick={() => mudar({ ...jogo, config: null, rodadas: [] })} className={`${PRINCIPAL} sm:flex-1`}>
             Jogar de novo
           </button>
           <Link href="/" className={`${SECUNDARIO} no-underline`}>
@@ -362,14 +455,12 @@ function StopNoPapel({ conversa }: { conversa: readonly string[] }) {
   }
 
   const cabecalho = (
-    <p className="m-0 flex justify-between text-sm font-bold text-suave">
-      <span>
+    <div className="flex flex-col gap-0.5 text-sm text-suave">
+      <span className="font-bold">
         Rodada {rodadas.length} de {config.total}
       </span>
-      <span>
-        Jogador 1: {total[0]} · Jogador 2: {total[1]}
-      </span>
-    </p>
+      {rodadas.some((x) => x.somada) ? <span>{nomes.map((_, k) => `${nomeDe(k)} ${total[k]}`).join(" · ")}</span> : null}
+    </div>
   );
 
   // ---------------- escrevendo
@@ -378,7 +469,7 @@ function StopNoPapel({ conversa }: { conversa: readonly string[] }) {
       <div className="flex flex-col gap-4">
         {cabecalho}
         <Letra letra={r.letra} girar={Date.now() - r.inicio < 1500} />
-        <Relogio inicio={r.inicio} segundos={config.tempo} parado={false} aoAcabar={() => atualizar({ ...r, parado: true })} />
+        <Relogio key={rodadas.length} inicio={r.inicio} segundos={config.tempo} parado={false} aoAcabar={() => atualizar({ ...r, parado: true })} />
         <ul className="m-0 flex list-none flex-wrap gap-2 p-0">
           {config.categorias.map((c) => (
             <li key={c} className="rounded-full bg-painel px-3 py-1.5 text-[15px] font-bold">
@@ -386,66 +477,73 @@ function StopNoPapel({ conversa }: { conversa: readonly string[] }) {
             </li>
           ))}
         </ul>
-        <button
-          type="button"
-          onClick={() => atualizar({ ...r, parado: true })}
-          className="min-h-[72px] rounded-3xl font-display text-[34px] font-extrabold tracking-wide text-white shadow-md active:scale-[0.98]"
-          style={{ background: "var(--color-fogo)" }}
-        >
-          STOP!
-        </button>
+        <BotaoStop habilitado aoTocar={() => atualizar({ ...r, parado: true })} />
         <p className="m-0 text-sm text-suave">Quem preencher todas as categorias toca em STOP. Aí todo mundo para de escrever.</p>
       </div>
     );
   }
 
   // ---------------- conferindo
-  const todas = config.categorias.every((c) => r.escolhas[c]);
-  const pontosRodada = pontosDa(r);
+  const max = config.categorias.length;
+  const ultima = rodadas.length >= config.total;
   return (
     <div className="flex flex-col gap-4">
       {cabecalho}
       <div className="flex items-center gap-3 rounded-2xl bg-sol-claro p-3.5">
         <span className="font-display text-[40px] font-extrabold leading-none">{r.letra}</span>
         <p className="m-0 text-[15px]">
-          <strong>Hora de conferir.</strong> Leiam as respostas em voz alta. Para cada categoria, toquem em quem marcou ponto.
+          <strong>Hora de conferir.</strong> Cada um lê as suas palavras em voz alta. Para cada palavra que vale, toque em +10 (ninguém mais escreveu
+          igual) ou em +5 (alguém escreveu igual).
         </p>
       </div>
-      <ol className="m-0 flex list-none flex-col gap-3 p-0">
-        {config.categorias.map((c) => (
-          <li key={c} className="flex flex-col gap-1.5">
-            <span className="text-[15px] font-bold">{nomeDaCategoria(c)}</span>
-            <div className="flex flex-wrap gap-1.5" role="radiogroup" aria-label={`Pontos em ${nomeDaCategoria(c)}`}>
-              {ESCOLHAS.map((o) => (
-                <button
-                  key={o.id}
-                  type="button"
-                  role="radio"
-                  aria-checked={r.escolhas[c] === o.id}
-                  onClick={() => atualizar({ ...r, escolhas: { ...r.escolhas, [c]: o.id } })}
-                  className={`min-h-10 rounded-full px-3 text-sm font-bold ring-1 ${r.escolhas[c] === o.id ? "bg-azul text-white ring-azul" : "bg-white ring-borda"}`}
-                >
-                  {o.rotulo}
+      <h2 className="m-0 text-[15px] font-bold">Pontos nesta rodada</h2>
+      <ul className="m-0 flex list-none flex-col gap-2 p-0">
+        {nomes.map((_, k) => {
+          const toques = r.pontos[k] ?? [];
+          const cheio = toques.length >= max;
+          const tocar = (mudanca: (l: number[]) => number[]) => atualizar({ ...r, pontos: r.pontos.map((l, j) => (j === k ? mudanca(l) : l)) });
+          return (
+            <li key={k} className="flex flex-col gap-2 rounded-2xl border border-borda p-3">
+              <div className="flex items-center gap-2">
+                <Ponto i={k} />
+                <span className="min-w-0 flex-1 font-bold">{nomeDe(k)}</span>
+                <span className="font-display text-[26px] font-extrabold leading-none">{somaDe(toques)}</span>
+              </div>
+              <div className="flex gap-2">
+                <button type="button" disabled={cheio} onClick={() => tocar((l) => [...l, 10])} aria-label={`Mais 10 para ${nomeDe(k)}`} className={`${SECUNDARIO} min-h-11 flex-1`}>
+                  +10
                 </button>
-              ))}
-            </div>
-          </li>
-        ))}
-      </ol>
+                <button type="button" disabled={cheio} onClick={() => tocar((l) => [...l, 5])} aria-label={`Mais 5 para ${nomeDe(k)}`} className={`${SECUNDARIO} min-h-11 flex-1`}>
+                  +5
+                </button>
+                <button
+                  type="button"
+                  disabled={!toques.length}
+                  onClick={() => tocar((l) => l.slice(0, -1))}
+                  aria-label={`Desfazer o último ponto de ${nomeDe(k)}`}
+                  className={`${SECUNDARIO} min-h-11 px-3.5`}
+                >
+                  <Desfazer tamanho={20} />
+                </button>
+              </div>
+            </li>
+          );
+        })}
+      </ul>
       <p className="m-0 text-sm text-suave">{REGRA} Em dúvida se uma palavra vale? Vocês combinam, e o adulto dá a palavra final.</p>
-      <Placar rotulos={["Jogador 1 nesta rodada", "Jogador 2 nesta rodada"]} pontos={pontosRodada} />
       <button
         type="button"
-        disabled={!todas}
         onClick={() => {
-          const somada = { ...r, somada: true };
-          const lista = [...rodadas.slice(0, -1), somada];
-          if (lista.length < config.total) novaRodada(config, lista);
-          else mudar({ ...jogo, rodadas: lista });
+          const lista = [...rodadas.slice(0, -1), { ...r, somada: true }];
+          if (!ultima) novaRodada(config, lista);
+          else {
+            evento("partida_terminada", { jogo: ID, modo: "mesmo-aparelho" });
+            mudar({ ...jogo, rodadas: lista });
+          }
         }}
         className={PRINCIPAL}
       >
-        {rodadas.length < config.total ? "Somar e sortear a próxima letra" : "Somar e ver quem ganhou"}
+        {ultima ? "Somar e ver quem ganhou" : "Somar e sortear a próxima letra"}
       </button>
     </div>
   );
@@ -455,10 +553,17 @@ function StopNoPapel({ conversa }: { conversa: readonly string[] }) {
 
 type SalvoStop = { v: 1; jogo: "stop"; partida: PartidaStop; rascunho: Respostas; atualizado: number };
 
-function salvoValido(x: unknown, codigo: string): x is SalvoStop {
-  const s = x as SalvoStop | null;
-  return !!s && s.v === 1 && s.jogo === "stop" && !!s.partida && s.partida.codigo === codigo && Array.isArray(s.partida.rodadas);
+/** A sala guardada neste aparelho. Uma sala do formato de antes (o Stop de dois) recomeça com o mesmo papel. */
+function lerSala(x: unknown, codigo: string): SalvoStop | null {
+  const s = x as { v?: unknown; jogo?: unknown; partida?: (Partial<PartidaStop> & { v?: unknown }) | null } | null;
+  if (!s || s.v !== 1 || s.jogo !== ID || !s.partida || s.partida.codigo !== codigo || typeof s.partida.meuId !== "string") return null;
+  if (s.partida.v === 2 && Array.isArray(s.partida.rodadas) && Array.isArray(s.partida.elenco)) return s as SalvoStop;
+  return { v: 1, jogo: ID, partida: novaPartidaStop(codigo, s.partida.papel === "criador" ? "criador" : "convidado", s.partida.meuId), rascunho: {}, atualizado: Date.now() };
 }
+
+/** "a Onça", "da Onça": os textos de cada jogador à distância (o bicho de cada um). */
+const oBicho = (i: number) => `${bicho(i).a} ${bicho(i).nome}`;
+const doBicho = (i: number) => `${bicho(i).a === "a" ? "da" : "do"} ${bicho(i).nome}`;
 
 function EntradaStop({ aoEntrar }: { aoEntrar: (codigo: string) => void }) {
   const [noAr, setNoAr] = useState<"verificando" | "sim" | "nao">("verificando");
@@ -482,14 +587,17 @@ function EntradaStop({ aoEntrar }: { aoEntrar: (codigo: string) => void }) {
 
   const criar = () => {
     const codigo = novoCodigo();
-    gravar(chaveDaSala(codigo), { v: 1, jogo: ID, partida: novaPartidaStop(codigo, "criador", novoId()), rascunho: {}, atualizado: Date.now() });
+    gravar(chaveDaSala(codigo), { v: 1, jogo: ID, partida: novaPartidaStop(codigo, "criador", novoId()), rascunho: {}, atualizado: Date.now() } satisfies SalvoStop);
     evento("sala_criada", { jogo: ID });
     aoEntrar(codigo);
   };
 
   return (
     <div className="flex flex-col gap-4">
-      <p className="m-0 text-[15px] text-suave">Um cria a sala e manda o código; o outro entra. Sem cadastro e sem chat: só as palavras do jogo passam pela internet.</p>
+      <p className="m-0 text-[15px] text-suave">
+        Um cria a sala e manda o código; os outros entram (até {MAX_JOGADORES} jogadores). Sem cadastro e sem chat: só as palavras do jogo passam pela
+        internet, e cada um aparece como um bicho.
+      </p>
       {noAr === "verificando" ? (
         <p role="status" className="m-0 rounded-2xl bg-painel p-3.5 text-[15px]">
           Conferindo se o modo à distância está no ar…
@@ -517,7 +625,7 @@ function EntradaStop({ aoEntrar }: { aoEntrar: (codigo: string) => void }) {
         className="flex flex-col gap-2 rounded-2xl border border-borda p-4"
       >
         <label htmlFor="codigo" className="text-[15px] font-bold">
-          Entrar com o código que o outro mandou
+          Entrar com o código que mandaram
         </label>
         <div className="flex gap-2">
           <input
@@ -560,6 +668,21 @@ function EntradaStop({ aoEntrar }: { aoEntrar: (codigo: string) => void }) {
   );
 }
 
+function SalaCheia({ aoSair }: { aoSair: () => void }) {
+  return (
+    <div role="alert" className="flex flex-col gap-3 rounded-2xl bg-alerta-claro p-4 text-alerta">
+      <p className="m-0 font-bold">Esta sala está cheia.</p>
+      <p className="m-0">A sala do Stop aceita até {MAX_JOGADORES} jogadores ao mesmo tempo. Confira o código com quem mandou, ou crie uma sala nova.</p>
+      <button type="button" onClick={aoSair} className={`${SECUNDARIO} self-start`}>
+        Voltar
+      </button>
+    </div>
+  );
+}
+
+/** De quanto em quanto tempo cada aparelho repete o seu estado: com mais gente, menos vezes (cada mensagem vai para todos). */
+const intervaloDeRepeticao = (naSala: number) => (naSala <= 2 ? 4000 : naSala <= 4 ? 6000 : 8000);
+
 function SalaStop({ codigo, conversa, aoSair }: { codigo: string; conversa: readonly string[]; aoSair: () => void }) {
   const [salvo, setSalvo] = useState<SalvoStop | null>(null);
   const [outroJogo, setOutroJogo] = useState<string | null>(null);
@@ -570,6 +693,7 @@ function SalaStop({ codigo, conversa, aoSair }: { codigo: string; conversa: read
   const ref = useRef<SalvoStop | null>(null);
   const conexao = useRef<Conexao<MsgStop> | null>(null);
   const membrosRef = useRef<Membro[]>([]);
+  const resposta = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   const guardar = useCallback(
     (s: SalvoStop) => {
@@ -582,17 +706,33 @@ function SalaStop({ codigo, conversa, aoSair }: { codigo: string; conversa: read
   const enviar = useCallback((msgs: MsgStop[]) => {
     for (const m of msgs) conexao.current?.enviar(m);
   }, []);
+  const contexto = useCallback(
+    (): Contexto => ({ agora: Date.now(), presentes: membrosRef.current.map((m) => m.id), rascunho: ref.current?.rascunho ?? {} }),
+    [],
+  );
   const aplicar = useCallback(
-    (passo: PassoStop, rascunho?: Respostas) => {
+    (passo: PassoStop) => {
       const s = ref.current;
       if (!s) return;
       const antes = s.partida;
-      const proximo = { ...s, partida: passo.partida, rascunho: rascunho ?? s.rascunho, atualizado: Date.now() };
-      // rodada nova: o rascunho começa vazio
-      if ((atual(passo.partida)?.r ?? 0) !== (atual(antes)?.r ?? 0) || passo.partida.p !== antes.p) proximo.rascunho = {};
-      guardar(proximo);
+      if (passo.partida !== antes) {
+        const proximo: SalvoStop = { ...s, partida: passo.partida, atualizado: Date.now() };
+        // rodada nova (ou partida nova): o rascunho começa vazio
+        if ((atual(passo.partida)?.r ?? 0) !== (atual(antes)?.r ?? 0) || passo.partida.p !== antes.p) proximo.rascunho = {};
+        guardar(proximo);
+      }
       enviar(passo.enviar);
-      if (antes.rodadas.length === 0 && passo.partida.rodadas.length === 1) evento("partida_iniciada", { jogo: ID, modo: "distancia" });
+      if (passo.responder && !resposta.current) {
+        // alguém precisa do que eu sei: mando o estado inteiro daqui a pouco, num envio só
+        resposta.current = setTimeout(
+          () => {
+            resposta.current = null;
+            if (ref.current) enviar(reenviarStop(ref.current.partida));
+          },
+          300 + Math.random() * 900,
+        );
+      }
+      if (antes.rodadas.length === 0 && passo.partida.rodadas.length > 0) evento("partida_iniciada", { jogo: ID, modo: "distancia" });
       if (!antes.fim && passo.partida.fim) evento("partida_terminada", { jogo: ID, modo: "distancia" });
     },
     [enviar, guardar],
@@ -604,10 +744,13 @@ function SalaStop({ codigo, conversa, aoSair }: { codigo: string; conversa: read
       setOutroJogo(dono);
       return;
     }
-    const guardado = ler<SalvoStop>(chaveDaSala(codigo));
-    const s: SalvoStop = salvoValido(guardado, codigo)
-      ? guardado
-      : { v: 1, jogo: ID, partida: novaPartidaStop(codigo, "convidado", novoId()), rascunho: {}, atualizado: Date.now() };
+    const s = lerSala(ler(chaveDaSala(codigo)), codigo) ?? {
+      v: 1,
+      jogo: ID,
+      partida: novaPartidaStop(codigo, "convidado", novoId()),
+      rascunho: {},
+      atualizado: Date.now(),
+    };
     guardar(s);
     if (configValida(s.partida.config)) setConfig(s.partida.config);
     evento("sala_aberta", { jogo: ID, papel: s.partida.papel });
@@ -625,19 +768,21 @@ function SalaStop({ codigo, conversa, aoSair }: { codigo: string; conversa: read
       {
         aoMensagem: (msg, de) => {
           const s = ref.current;
-          if (ativo && s) aplicar(receberStop(s.partida, msg, de, s.rascunho, Date.now()));
+          if (ativo && s) aplicar(receberStop(s.partida, msg, de, contexto()));
         },
         aoPresenca: (lista) => {
           if (!ativo) return;
           membrosRef.current = lista;
           setMembros(lista);
-          const primeiros = [...lista].sort((a, b) => a.desde - b.desde || a.id.localeCompare(b.id)).slice(0, 2);
-          if (lista.length > 2 && !primeiros.some((m) => m.id === meuId)) {
+          const primeiros = [...lista].sort((a, b) => a.desde - b.desde || a.id.localeCompare(b.id)).slice(0, MAX_JOGADORES);
+          if (lista.length > MAX_JOGADORES && !primeiros.some((m) => m.id === meuId)) {
             setCheia(true);
             conexao.current?.sair();
             return;
           }
-          if (ref.current && lista.some((m) => m.id !== meuId)) enviar(reenviarStop(ref.current.partida));
+          // quem criou a sala: com a rodada fechada e gente de volta, abre a próxima
+          const s = ref.current;
+          if (s && s.partida.papel === "criador" && faseDe(s.partida) === "entre") aplicar(abrirProxima(s.partida, contexto()));
         },
         aoEstado: (estado) => {
           if (!ativo) return;
@@ -658,80 +803,181 @@ function SalaStop({ codigo, conversa, aoSair }: { codigo: string; conversa: read
       ativo = false;
       conexao.current?.sair();
       conexao.current = null;
+      if (resposta.current) clearTimeout(resposta.current);
+      resposta.current = null;
     };
-  }, [codigo, carregado, aplicar, enviar]);
+  }, [codigo, carregado, aplicar, enviar, contexto]);
 
+  // de tempos em tempos, cada um repete o seu estado (assim, mensagem perdida não atrapalha)
   useEffect(() => {
+    let ultimo = 0;
     const t = setInterval(() => {
       const p = ref.current?.partida;
-      if (p && membrosRef.current.some((m) => m.id !== p.meuId)) enviar(reenviarStop(p));
-    }, 4000);
+      if (!p || !membrosRef.current.some((m) => m.id !== p.meuId)) return;
+      if (Date.now() - ultimo < intervaloDeRepeticao(membrosRef.current.length)) return;
+      ultimo = Date.now();
+      enviar(reenviarStop(p));
+    }, 1000);
     return () => clearInterval(t);
   }, [enviar]);
 
-  const pararAgora = useCallback(() => {
-    const s = ref.current;
-    if (s) aplicar(parar(s.partida, s.rascunho));
-  }, [aplicar]);
+  const pararAgora = useCallback(
+    (pediStop: boolean) => {
+      const s = ref.current;
+      if (s) aplicar(parar(s.partida, s.rascunho, pediStop, Date.now()));
+    },
+    [aplicar],
+  );
+  const acabouOTempo = useCallback(() => pararAgora(false), [pararAgora]);
 
   const placar = useMemo(() => (salvo ? placarStop(salvo.partida) : null), [salvo]);
+  const fase = salvo ? faseDe(salvo.partida) : null;
+
+  // a sala já recebeu todos os aparelhos que cabem: sai da conexão
+  useEffect(() => {
+    if (fase === "cheia") conexao.current?.sair();
+  }, [fase]);
+
+  // tela acesa até a partida acabar: tela apagada derruba a conexão
+  useTelaAcesa(!!fase && fase !== "fim" && fase !== "cheia" && !cheia && !outroJogo);
 
   if (outroJogo) return <SalaDeOutroJogo codigo={codigo} jogo={outroJogo} aoSair={aoSair} />;
-  if (cheia) {
-    return (
-      <div role="alert" className="flex flex-col gap-3 rounded-2xl bg-alerta-claro p-4 text-alerta">
-        <p className="m-0 font-bold">Esta sala já tem dois jogadores.</p>
-        <p className="m-0">Confira o código com quem mandou, ou crie uma sala nova.</p>
-        <button type="button" onClick={aoSair} className={`${SECUNDARIO} self-start`}>
-          Voltar
-        </button>
-      </div>
-    );
-  }
-  if (!salvo || !placar) return <div aria-busy="true" className="min-h-[60vh]" />;
+  if (cheia || fase === "cheia") return <SalaCheia aoSair={aoSair} />;
+  if (!salvo || !placar || !fase) return <div aria-busy="true" className="min-h-[60vh]" />;
 
   const p = salvo.partida;
-  const fase = faseDe(p);
   const r = atual(p);
-  const outroPresente = membros.some((m) => m.id !== p.meuId);
-  const outroNaPartida = p.outro?.p === p.p;
+  const eu = meuIndice(p);
+  const presentes = membros.map((m) => m.id);
+  const estaNaSala = (i: number) => i === eu || presentes.includes(p.elenco[i]);
+  const outrosNaSala = p.elenco.filter((id, i) => i !== eu && presentes.includes(id)).length;
+  /** "você" ou "a Onça" */
+  const o = (i: number) => (i === eu ? "você" : oBicho(i));
+  const nomeComVoce = (i: number) => (i === eu ? `${bicho(i).nome} (você)` : bicho(i).nome);
+
+  // quem joga esta partida e saiu da sala
+  const ausentes = p.elenco.map((_, i) => i).filter((i) => i !== eu && (placar.jogou[i] || !!r?.quem.includes(i)) && !estaNaSala(i));
+  const saiu = ausentes.length && fase !== "fim" ? `${maiuscula(juntar(ausentes.map(oBicho)))} ${ausentes.length > 1 ? "saíram" : "saiu"} da sala ou a conexão caiu.` : null;
+  const detalhe =
+    p.papel === "convidado" && ausentes.includes(0)
+      ? `Às vezes é só a tela que apagou. A partida continua quando ${oBicho(0)}, que criou a sala, voltar.`
+      : "Às vezes é só a tela que apagou.";
+
   const sair = () => {
-    if ((fase === "escrevendo" || fase === "conferindo") && !window.confirm("Sair da sala? A partida fica guardada neste aparelho e dá para voltar pelo código.")) return;
+    if ((fase === "escrevendo" || fase === "aguardando" || fase === "conferindo") && !window.confirm("Sair da sala? A partida fica guardada neste aparelho e dá para voltar pelo código.")) return;
     aoSair();
   };
-  const barra = <BarraDaSala codigo={codigo} conexao={conexaoEstado} outroPresente={outroPresente} aoSair={sair} />;
-  const cabecalho =
-    r && fase !== "fim" ? (
-      <p className="m-0 flex justify-between text-sm font-bold text-suave">
+  const barra = (
+    <BarraDaSala
+      codigo={codigo}
+      conexao={conexaoEstado}
+      outroPresente={outrosNaSala > 0}
+      outroJaVeio={p.elenco.length > 1}
+      emPartida={fase !== "fim" && fase !== "esperando"}
+      link={linkDaSala(codigo, ID)}
+      nomeDoJogo="Stop"
+      aoSair={sair}
+      aoTentar={() => conexao.current?.reconectar()}
+      grupo={{
+        rotulo: outrosNaSala > 0 ? `Você e mais ${outrosNaSala} na sala` : p.elenco.length > 1 ? "Só você na sala agora" : "Esperando os outros entrarem",
+        ok: outrosNaSala > 0,
+        saiu,
+        detalhe,
+      }}
+    />
+  );
+  const cabecalho = r ? (
+    <p className="m-0 flex flex-wrap justify-between gap-x-3 text-sm font-bold text-suave">
+      <span>
+        Rodada {r.r} de {p.config.total}
+      </span>
+      {eu >= 0 ? (
         <span>
-          Rodada {r.r} de {p.config.total}
+          Você é {oBicho(eu)} · {placar.total[eu] ?? 0} pontos
         </span>
-        <span>
-          Você {placar.total[0]} · Outro {placar.total[1]}
-        </span>
-      </p>
-    ) : null;
+      ) : null}
+    </p>
+  ) : null;
+  const linhasTotal: Linha[] = p.elenco
+    .map((_, i) => i)
+    .filter((i) => placar.jogou[i])
+    .map((i) => ({ chave: i, nome: nomeComVoce(i), pontos: placar.total[i] ?? 0, destaque: i === eu, nota: estaNaSala(i) ? undefined : "saiu" }));
+  const quemParou = (x: RodadaStop) => (x.parou === null ? "Tempo!" : x.parou === eu ? "Você pediu Stop!" : `${maiuscula(oBicho(x.parou))} pediu Stop!`);
 
-  // ---------------- esperando
+  // quem criou a sala pode seguir sem quem saiu (quando a rodada está esperando por ele)
+  const podeSeguir = r ? r.quem.filter((i) => podeSeguirSem(p, i, presentes)) : [];
+  const seguirSemQuemSaiu = podeSeguir.length ? (
+    <div className="flex flex-col gap-2 rounded-2xl border border-borda p-3.5">
+      <p className="m-0 text-[15px]">
+        {maiuscula(juntar(podeSeguir.map(oBicho)))} {podeSeguir.length > 1 ? "saíram" : "saiu"} da sala. Se demorar para voltar, dá para seguir sem
+        esperar.{" "}
+        {fase === "aguardando"
+          ? "Quem não mandou as respostas fica de fora desta rodada e volta na próxima."
+          : "As respostas que já foram mandadas continuam valendo."}
+      </p>
+      <div className="flex flex-wrap gap-2">
+        {podeSeguir.map((i) => (
+          <button key={i} type="button" onClick={() => aplicar(seguirSem(p, i, contexto()))} className={SECUNDARIO}>
+            Seguir sem {oBicho(i)}
+          </button>
+        ))}
+      </div>
+    </div>
+  ) : null;
+
+  // ---------------- esperando a partida começar
   if (fase === "esperando") {
+    const naSala = p.elenco.map((_, i) => i).filter(estaNaSala);
+    const lista = (
+      <section aria-labelledby="na-sala" className="flex flex-col gap-2">
+        <h2 id="na-sala" className="m-0 text-[15px] font-bold">
+          Na sala
+        </h2>
+        {naSala.length ? (
+          <ul className="m-0 flex list-none flex-wrap gap-2 p-0">
+            {naSala.map((i) => (
+              <li key={i} className="flex items-center gap-1.5 rounded-full bg-painel px-3 py-1.5 text-[15px] font-bold">
+                <Ponto i={i} />
+                {bicho(i).nome}
+                {i === eu ? " (você)" : ""}
+                <span className="font-normal text-suave">
+                  {i === 0 && i !== eu ? " · criou a sala" : ""}
+                  {p.papel === "criador" && i !== eu && p.vistos[p.elenco[i]]?.p !== p.p ? " · ainda no resultado" : ""}
+                </span>
+              </li>
+            ))}
+          </ul>
+        ) : null}
+        <p className="m-0 text-sm text-suave">Cada um aparece como um bicho, pela ordem de chegada. Nomes não passam pela internet.</p>
+      </section>
+    );
     if (p.papel === "criador") {
-      const podeComecar = outroPresente && outroNaPartida;
+      const jogadores = quemJoga(p, presentes).length;
       return (
         <div className="flex flex-col gap-4">
           {barra}
-          {!p.outro ? <ConviteDaSala codigo={codigo} link={linkDaSala(codigo, ID)} nomeDoJogo="Stop" /> : null}
+          <ConviteDaSala codigo={codigo} link={linkDaSala(codigo, ID)} nomeDoJogo="Stop" maxJogadores={MAX_JOGADORES} />
+          {lista}
           <EscolherConfig config={config} aoMudar={setConfig} />
-          <button type="button" disabled={!podeComecar} onClick={() => aplicar(comecar(p, config, Date.now()))} className={PRINCIPAL}>
-            {podeComecar ? "Sortear a primeira letra" : p.outro && !outroNaPartida ? "Esperando o outro pedir para jogar de novo" : "Esperando o outro entrar"}
+          <button type="button" disabled={jogadores < 2} onClick={() => aplicar(comecar(p, config, contexto()))} className={PRINCIPAL}>
+            {jogadores >= 2 ? `Sortear a primeira letra (${jogadores} jogadores)` : "Esperando alguém entrar"}
           </button>
         </div>
       );
     }
+    const alguemAqui = membros.some((m) => m.id !== p.meuId);
     return (
       <div className="flex flex-col gap-4">
         {barra}
+        {lista}
         <p role="status" className="m-0 rounded-2xl bg-painel p-3.5 text-[17px]">
-          {outroPresente ? "O outro está escolhendo as categorias. A letra aparece aqui quando ele começar." : "Esperando o outro jogador entrar na sala."}
+          {eu < 0
+            ? alguemAqui
+              ? "Entrando na sala…"
+              : "Esperando quem criou a sala."
+            : presentes.includes(p.elenco[0])
+              ? `${maiuscula(oBicho(0))}, que criou a sala, está escolhendo as categorias. A letra aparece aqui quando começar.`
+              : `Esperando ${oBicho(0)}, que criou a sala, voltar.`}
         </p>
       </div>
     );
@@ -745,7 +991,7 @@ function SalaStop({ codigo, conversa, aoSair }: { codigo: string; conversa: read
         {barra}
         {cabecalho}
         <Letra letra={r.letra} girar={Date.now() - r.inicio < 1500} />
-        <Relogio inicio={r.inicio} segundos={p.config.tempo} parado={false} aoAcabar={pararAgora} />
+        <Relogio key={`${p.p}-${r.r}`} inicio={r.inicio} segundos={p.config.tempo} parado={false} aoAcabar={acabouOTempo} />
         <div className="flex flex-col gap-2.5">
           {p.config.categorias.map((c) => {
             const valor = salvo.rascunho[c] ?? "";
@@ -768,38 +1014,38 @@ function SalaStop({ codigo, conversa, aoSair }: { codigo: string; conversa: read
             );
           })}
         </div>
-        <button
-          type="button"
-          disabled={!tudo}
-          onClick={pararAgora}
-          className="min-h-[72px] rounded-3xl font-display text-[34px] font-extrabold tracking-wide text-white shadow-md disabled:opacity-40"
-          style={{ background: "var(--color-fogo)" }}
-        >
-          STOP!
-        </button>
-        <p className="m-0 text-sm text-suave">{tudo ? "Tudo preenchido: pode pedir Stop." : "O Stop libera quando todas as categorias tiverem palavra."}</p>
-      </div>
-    );
-  }
-
-  // ---------------- esperando as respostas do outro
-  if (fase === "aguardando") {
-    return (
-      <div className="flex flex-col gap-4">
-        {barra}
-        {cabecalho}
-        <p role="status" className="m-0 rounded-2xl bg-sol-claro p-3.5 text-[17px]">
-          {r?.quemParou === "eu" ? "Você pediu Stop!" : "O tempo acabou."} Esperando as respostas do outro…
+        <BotaoStop habilitado={tudo} aoTocar={() => pararAgora(true)} />
+        <p className="m-0 text-sm text-suave">
+          {tudo ? "Tudo preenchido: pode pedir Stop. A rodada acaba para todos." : "O Stop libera quando todas as categorias tiverem palavra."}
         </p>
       </div>
     );
   }
 
+  // ---------------- esperando as respostas de alguém
+  if (fase === "aguardando" && r) {
+    const faltam = r.quem.filter((i) => !r.respostas[i]);
+    return (
+      <div className="flex flex-col gap-4">
+        {barra}
+        {cabecalho}
+        <p role="status" className="m-0 rounded-2xl bg-sol-claro p-3.5 text-[17px]">
+          {quemParou(r)} Esperando as respostas {juntar(faltam.map(doBicho))}…
+        </p>
+        {seguirSemQuemSaiu}
+      </div>
+    );
+  }
+
   // ---------------- conferindo
-  if (fase === "conferindo" && r && r.minhas && r.dele) {
-    const anuladas = [...r.anuladasPorMim, ...r.anuladasPeloOutro];
-    const daRodada = placar.porRodada[r.r - 1] ?? [0, 0];
+  if (fase === "conferindo" && r) {
+    const n = r.quem.length;
+    const precisa = votosParaAnular(n);
+    const prontoEu = r.prontos.includes(eu);
+    const meusVotos = r.votos[eu] ?? [];
+    const daRodada = placar.porRodada[r.r - 1];
     const ultima = r.r >= p.config.total;
+    const faltamProntos = r.quem.filter((i) => i !== eu && !r.prontos.includes(i));
     return (
       <div className="flex flex-col gap-4">
         {barra}
@@ -807,62 +1053,76 @@ function SalaStop({ codigo, conversa, aoSair }: { codigo: string; conversa: read
         <div className="flex items-center gap-3 rounded-2xl bg-sol-claro p-3.5">
           <span className="font-display text-[40px] font-extrabold leading-none">{r.letra}</span>
           <p className="m-0 text-[15px]">
-            <strong>{r.quemParou === "eu" ? "Você pediu Stop." : r.quemParou === "ele" ? "O outro pediu Stop." : "Tempo!"}</strong> Conversem sobre as
-            respostas. Não aceita uma palavra do outro? Toque em &quot;Não vale&quot;.
+            <strong>{quemParou(r)}</strong> Confiram as respostas. Não aceita a palavra de alguém? Toque em &quot;Não vale&quot;.
+            {n === 3 ? " Ela só deixa de valer quando os outros dois marcam." : n > 3 ? ` Ela deixa de valer quando ${precisa} dos ${n - 1} outros marcam.` : ""}
           </p>
         </div>
         <div className="flex flex-col gap-2">
-          <div className="grid grid-cols-2 gap-2 text-sm font-bold text-suave">
-            <span>Você</span>
-            <span>O outro</span>
-          </div>
           {p.config.categorias.map((c) => {
-            const [pm, pe] = pontosDaCategoria(r.minhas?.[c], r.dele?.[c], r.letra, anuladas);
-            const minha = r.minhas?.[c] ?? "";
-            const dele = r.dele?.[c] ?? "";
-            const probMinha = problema(minha, r.letra);
-            const probDele = problema(dele, r.letra);
-            const anuladaDele = r.anuladasPorMim.includes(normalizar(dele));
-            const anuladaMinha = r.anuladasPeloOutro.includes(normalizar(minha)) || (anuladas.includes(normalizar(minha)) && !!minha);
+            const minha = normalizar(r.respostas[eu]?.[c] ?? "");
             return (
-              <section key={c} aria-label={nomeDaCategoria(c)} className="flex flex-col gap-1.5 rounded-2xl border border-borda p-3">
-                <span className="text-sm font-bold">{nomeDaCategoria(c)}</span>
-                <div className="grid grid-cols-2 gap-2">
-                  <div className="flex flex-col gap-0.5">
-                    <span className={`text-[17px] font-bold ${pm === 0 ? "text-suave line-through" : ""}`}>{minha || "—"}</span>
-                    <span className="text-sm">
-                      <strong>{pm}</strong> {probMinha ? `· ${probMinha}` : anuladaMinha ? "· não aceita" : ""}
-                    </span>
-                  </div>
-                  <div className="flex flex-col gap-0.5">
-                    <span className={`text-[17px] font-bold ${pe === 0 ? "text-suave line-through" : ""}`}>{dele || "—"}</span>
-                    <span className="text-sm">
-                      <strong>{pe}</strong> {probDele ? `· ${probDele}` : ""}
-                    </span>
-                    {!probDele && !r.prontoEu ? (
-                      <button
-                        type="button"
-                        aria-pressed={anuladaDele}
-                        onClick={() => aplicar(anular(p, dele, !anuladaDele))}
-                        className={`mt-0.5 self-start rounded-full px-2.5 py-1 text-sm font-bold ring-1 ${anuladaDele ? "bg-fogo text-white ring-fogo" : "bg-white text-alerta ring-borda"}`}
-                      >
-                        {anuladaDele ? "Não vale (desfazer)" : "Não vale"}
-                      </button>
-                    ) : null}
-                  </div>
-                </div>
+              <section key={c} aria-label={nomeDaCategoria(c)} className="flex flex-col rounded-2xl border border-borda px-3 pt-2 pb-1">
+                <span className="text-sm font-bold text-suave">{nomeDaCategoria(c)}</span>
+                <ul className="m-0 flex list-none flex-col p-0">
+                  {conferirCategoria(r, c).map((cel) => {
+                    const w = normalizar(cel.palavra);
+                    const podeVotar = cel.indice !== eu && !cel.problema && !prontoEu && w !== minha;
+                    const votado = meusVotos.includes(`${c}:${w}`);
+                    const motivo = cel.problema
+                      ? cel.problema
+                      : cel.anulada
+                        ? n > 2
+                          ? "a maioria não aceitou"
+                          : `${o(r.quem.find((j) => j !== cel.indice) ?? eu)} não aceitou`
+                        : cel.repetida
+                          ? "repetida"
+                          : cel.votos
+                            ? `${cel.votos} de ${precisa} "não vale"`
+                            : "";
+                    return (
+                      <li key={cel.indice} className="flex items-center gap-2.5 border-t border-linha py-2 first:border-t-0">
+                        <Ponto i={cel.indice} />
+                        <div className="flex min-w-0 flex-1 flex-col">
+                          <span className={`break-words text-[17px] font-bold ${cel.pontos === 0 ? "text-suave line-through" : ""}`}>{cel.palavra || "—"}</span>
+                          <span className="text-sm">
+                            {nomeComVoce(cel.indice)} · <strong>{cel.pontos}</strong>
+                            {motivo ? ` · ${motivo}` : ""}
+                          </span>
+                        </div>
+                        {podeVotar ? (
+                          <button
+                            type="button"
+                            aria-pressed={votado}
+                            aria-label={`${votado ? "Desfazer não vale" : "Não vale"}: ${cel.palavra}, ${nomeComVoce(cel.indice)}`}
+                            onClick={() => aplicar(anular(p, c, cel.palavra, !votado))}
+                            className={`shrink-0 rounded-full px-2.5 py-1.5 text-sm font-bold ring-1 ${votado ? "bg-fogo text-white ring-fogo" : "bg-white text-alerta ring-borda"}`}
+                          >
+                            {votado ? "Não vale (desfazer)" : "Não vale"}
+                          </button>
+                        ) : null}
+                      </li>
+                    );
+                  })}
+                </ul>
               </section>
             );
           })}
         </div>
         <p className="m-0 text-sm text-suave">{REGRA}</p>
-        <Placar rotulos={["Você nesta rodada", "O outro nesta rodada"]} pontos={daRodada} />
-        {r.prontoEu ? (
-          <p role="status" className="m-0 rounded-2xl bg-painel p-3.5 text-[15px]">
-            Esperando o outro terminar de conferir…
-          </p>
+        {daRodada ? (
+          <PlacarLista titulo="Pontos desta rodada" linhas={r.quem.map((i, k) => ({ chave: i, nome: nomeComVoce(i), pontos: daRodada[k], destaque: i === eu }))} />
+        ) : null}
+        {prontoEu ? (
+          <>
+            <p role="status" className="m-0 rounded-2xl bg-painel p-3.5 text-[15px]">
+              {faltamProntos.length
+                ? `Esperando ${juntar(faltamProntos.map(oBicho))} ${faltamProntos.length > 1 ? "terminarem" : "terminar"} de conferir…`
+                : "Fechando a rodada…"}
+            </p>
+            {seguirSemQuemSaiu}
+          </>
         ) : (
-          <button type="button" onClick={() => aplicar(ficarPronto(p, Date.now()))} className={PRINCIPAL}>
+          <button type="button" onClick={() => aplicar(ficarPronto(p, contexto()))} className={PRINCIPAL}>
             {ultima ? "Pronto: ver quem ganhou" : "Pronto para a próxima letra"}
           </button>
         )}
@@ -870,23 +1130,70 @@ function SalaStop({ codigo, conversa, aoSair }: { codigo: string; conversa: read
     );
   }
 
+  // ---------------- a rodada começou sem mim
+  if (fase === "fora") {
+    return (
+      <div className="flex flex-col gap-4">
+        {barra}
+        {cabecalho}
+        <p role="status" className="m-0 rounded-2xl bg-painel p-3.5 text-[17px]">
+          {eu < 0 ? "Entrando na sala…" : "Esta rodada começou sem você (você chegou depois, ou a sua conexão caiu). Você entra na próxima."}
+        </p>
+        {linhasTotal.length ? <PlacarLista titulo="Placar" linhas={linhasTotal} /> : null}
+      </div>
+    );
+  }
+
+  // ---------------- rodada fechada, a próxima ainda não abriu
+  if (fase === "entre") {
+    const jogadores = quemJoga(p, presentes).length;
+    return (
+      <div className="flex flex-col gap-4">
+        {barra}
+        {cabecalho}
+        <p role="status" className="m-0 rounded-2xl bg-painel p-3.5 text-[17px]">
+          {p.papel === "criador"
+            ? jogadores >= 2
+              ? "Rodada fechada."
+              : "A rodada fechou, mas não tem mais ninguém na sala agora. A próxima letra sai quando alguém voltar."
+            : "Rodada fechada. Esperando a próxima letra…"}
+        </p>
+        {p.papel === "criador" && jogadores >= 2 ? (
+          <button type="button" onClick={() => aplicar(abrirProxima(p, contexto()))} className={PRINCIPAL}>
+            Sortear a próxima letra
+          </button>
+        ) : null}
+        <PlacarLista titulo="Placar" linhas={linhasTotal} />
+      </div>
+    );
+  }
+
   // ---------------- fim
-  const [eu, ele] = placar.total;
-  const outroQuerDeNovo = p.outro && p.outro.p > p.p;
+  const maior = Math.max(0, ...linhasTotal.map((l) => l.pontos));
+  const vencedores = linhasTotal.filter((l) => l.pontos === maior).map((l) => l.chave);
+  const titulo =
+    vencedores.length === 1 ? (vencedores[0] === eu ? "Você venceu!" : `${maiuscula(oBicho(vencedores[0]))} venceu!`) : `Empate entre ${juntar(vencedores.map(o))}!`;
+  const querem = p.papel === "criador" ? p.elenco.map((_, i) => i).filter((i) => i !== eu && (p.vistos[p.elenco[i]]?.p ?? 0) > p.p) : [];
+  const salaSeguiu = p.papel === "convidado" && p.pSala > p.p;
   return (
     <div className="flex flex-col gap-4">
       {barra}
       <div role="status" className="flex flex-col gap-1 rounded-2xl bg-azul p-4 text-white">
-        <p className="aparece m-0 font-display text-[24px] font-extrabold">{eu === ele ? "Empate!" : eu > ele ? "Você venceu!" : "O outro venceu."}</p>
+        <p className="aparece m-0 font-display text-[24px] font-extrabold">{titulo}</p>
         <p className="m-0 text-[15px] text-white/90">
-          {eu} a {ele} pontos, em {p.config.total} rodadas.
+          {maior} pontos{vencedores.length > 1 ? " cada" : ""}, em {p.config.total} rodadas.
         </p>
       </div>
-      <Placar rotulos={["Você", "O outro"]} pontos={placar.total} fim />
+      <PlacarLista titulo="Placar final" linhas={linhasTotal} />
       <Conversa perguntas={conversa} />
+      {querem.length ? (
+        <p role="status" className="m-0 text-[15px] font-bold">
+          {maiuscula(juntar(querem.map(oBicho)))} {querem.length > 1 ? "querem" : "quer"} jogar de novo.
+        </p>
+      ) : null}
       <div className="flex flex-col gap-2 sm:flex-row">
         <button type="button" onClick={() => aplicar(revancheStop(p))} className={`${PRINCIPAL} sm:flex-1`}>
-          {outroQuerDeNovo ? "O outro quer revanche: jogar de novo" : "Jogar de novo"}
+          {salaSeguiu ? `${maiuscula(oBicho(0))} quer jogar de novo: entrar` : "Jogar de novo"}
         </button>
         <Link href="/" className={`${SECUNDARIO} no-underline`}>
           Ver outros jogos

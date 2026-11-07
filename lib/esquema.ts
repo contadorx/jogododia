@@ -55,7 +55,8 @@ const EmBreve = Comum.extend({ status: z.literal("em-breve") });
 
 const Disponivel = Comum.extend({
   status: z.literal("disponivel"),
-  jogadores: z.number().int().min(2).max(4),
+  /** Quantos jogam: um número, ou uma faixa como "2 a 8". */
+  jogadores: z.union([z.number().int().min(2).max(4), z.string().regex(/^\d+ a \d+$/)]),
   /** Duração de uma partida, como "15 a 25". */
   minutos: z.string().regex(/^\d+( a \d+)?$/),
   precisa: z.array(z.string().min(3)).min(1),

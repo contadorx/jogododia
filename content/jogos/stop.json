@@ -5,27 +5,27 @@
   "ordem": 11,
   "idade": 7,
   "modo": "mesmo-ou-distancia",
-  "jogadores": 2,
+  "jogadores": "2 a 8",
   "minutos": "10 a 20",
   "treina": "Treina lembrar palavras, escrever com atenção à ortografia e separar as coisas por categoria.",
   "resumo": "Sorteia-se uma letra e cada um escreve, em cada categoria, uma palavra que comece com ela. Quem completar tudo primeiro pede Stop!",
   "precisa": [
-    "No mesmo aparelho: um celular ou tablet com este jogo aberto, e papel e lápis para cada um",
-    "À distância: um aparelho para cada um, com internet. Um cria a sala e manda o código; o outro entra. Cada um digita as palavras no próprio celular",
-    "Sem tela: papel, lápis e alguém para sortear a letra (dá para jogar com mais de dois)"
+    "No mesmo aparelho (até 8 jogadores): um celular ou tablet com este jogo aberto, e papel e lápis para cada um",
+    "À distância (até 6 jogadores): um aparelho para cada um, com internet. Um cria a sala e manda o código; os outros entram. Cada um digita as palavras no próprio celular",
+    "Sem tela: papel, lápis e alguém para sortear a letra"
   ],
   "passos": [
     "Escolham as categorias (nome de gente, animal, comida, objeto…), quantas rodadas e o tempo de cada uma.",
     "O site sorteia uma letra. Cada um escreve, em cada categoria, uma palavra que comece com ela.",
-    "Quem preencher todas as categorias pede Stop! A rodada acaba para os dois, mesmo que o tempo não tenha terminado.",
-    "Hora de conferir: palavra que vale e é diferente da do outro ganha 10 pontos; igual à do outro, 5; em branco ou que não vale, 0.",
-    "Em dúvida se uma palavra vale? Conversem. No mesmo aparelho, o adulto dá a palavra final. À distância, cada um pode marcar \"não vale\" nas palavras do outro.",
+    "Quem preencher todas as categorias pede Stop! A rodada acaba para todos, mesmo que o tempo não tenha terminado.",
+    "Hora de conferir: palavra que vale e que ninguém mais escreveu ganha 10 pontos; igual à de alguém, 5; em branco ou que não vale, 0.",
+    "Em dúvida se uma palavra vale? Conversem. No mesmo aparelho, o adulto dá a palavra final. À distância, cada um pode marcar \"não vale\" nas palavras dos outros, e a palavra deixa de valer quando a maioria marca (com dois jogadores, basta o outro).",
     "Ganha quem somar mais pontos no fim das rodadas."
   ],
   "combinados": [
     "Combinem antes se nome de marca e palavra em outra língua valem.",
     "Palavra escrita com erro: combinem se vale e, no fim da rodada, escrevam juntos do jeito certo.",
-    "À distância, as palavras aparecem para o outro jogador: combinem com a criança que os campos são só para palavras do jogo."
+    "À distância, as palavras aparecem para os outros jogadores, e cada um aparece como um bicho (Arara, Onça, Tatu…), sem nome. Mande o código só para quem a criança conhece, e combinem que os campos são só para palavras do jogo."
   ],
   "conversa": [
     "Qual foi a letra mais difícil? Por quê?",

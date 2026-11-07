@@ -64,7 +64,8 @@ export const SITE = {
 
 /**
  * Versão dos Termos de Uso e da Política de Privacidade.
- * Mudou o texto de forma relevante? Troque a data: na próxima partida, o adulto aceita de novo.
+ * Mudou o texto de forma relevante? Troque a versão (a data; no mesmo dia, a data com ".2", ".3"…): na
+ * próxima partida, o adulto aceita de novo.
  */
-export const VERSAO_TERMOS = "2026-11-07";
+export const VERSAO_TERMOS = "2026-11-07.2";
 export const DATA_TERMOS = "7 de novembro de 2026";

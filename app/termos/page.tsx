@@ -46,8 +46,8 @@ export default function Pagina() {
         {SITE.tempoReal.url ? (
           <p>
             Na partida à distância, cada um joga no seu aparelho, numa sala aberta por um código. O código é para mandar só para quem vai jogar com
-            a criança: não publique em grupos ou redes sociais. A sala aceita dois jogadores, e o adulto continua responsável por acompanhar a
-            partida, mesmo de longe.
+            a criança: não publique em grupos ou redes sociais. A sala aceita dois jogadores (no Stop, até seis), e o adulto continua
+            responsável por acompanhar a partida, mesmo de longe.
           </p>
         ) : null}
       </Clausula>

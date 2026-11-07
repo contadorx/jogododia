@@ -5,7 +5,8 @@ import { useCallback, useEffect, useRef, useState } from "react";
 import { coordenada, frotaCompleta, navio, situacaoDaFrota, type Posicao } from "@/lib/batalha";
 import { CHAVES, chaveDaSala, gravar, jogoDaSalaGuardada, ler, salasGuardadas } from "@/lib/armazenamento";
 import { evento } from "@/lib/metricas";
-import { SalaDeOutroJogo } from "../jogos/PecasDaSala";
+import { BarraDaSala, SalaDeOutroJogo } from "../jogos/PecasDaSala";
+import { useTelaAcesa } from "../jogos/useTelaAcesa";
 import {
   atirar,
   ehMensagem,
@@ -326,6 +327,9 @@ export function SalaDistancia({ codigo, conversa, aoSair }: { codigo: string; co
     setAlvo(null);
   }, [vez]);
 
+  // tela acesa até a partida acabar: tela apagada derruba a conexão
+  useTelaAcesa(!!salvo && salvo.partida.fase !== "fim" && !cheia && !outroJogo);
+
   if (outroJogo) return <SalaDeOutroJogo codigo={codigo} jogo={outroJogo} aoSair={aoSair} />;
 
   if (cheia) {
@@ -353,32 +357,17 @@ export function SalaDistancia({ codigo, conversa, aoSair }: { codigo: string; co
   };
 
   const barra = (
-    <div className="flex flex-wrap items-center gap-2">
-      <span className="font-display text-[17px] font-extrabold tracking-[0.08em]">Sala {codigo}</span>
-      <span
-        role="status"
-        className={`rounded-full px-2.5 py-1 text-sm font-bold ${
-          conexaoEstado === "caiu"
-            ? "bg-alerta-claro text-alerta"
-            : conexaoEstado === "conectando"
-              ? "bg-painel text-suave"
-              : outroPresente
-                ? "bg-folha-claro text-folha-escuro"
-                : "bg-sol-claro text-tinta"
-        }`}
-      >
-        {conexaoEstado === "caiu"
-          ? "Sem conexão, tentando de novo…"
-          : conexaoEstado === "conectando"
-            ? "Conectando…"
-            : outroPresente
-              ? "O outro está na sala"
-              : "Esperando o outro entrar"}
-      </span>
-      <button type="button" onClick={sair} className="ml-auto min-h-11 px-1 text-[15px] font-bold text-suave underline underline-offset-2">
-        Sair da sala
-      </button>
-    </div>
+    <BarraDaSala
+      codigo={codigo}
+      conexao={conexaoEstado}
+      outroPresente={outroPresente}
+      outroJaVeio={p.outro !== null}
+      emPartida={p.fase !== "fim"}
+      link={link}
+      nomeDoJogo="Batalha naval"
+      aoSair={sair}
+      aoTentar={() => conexao.current?.reconectar()}
+    />
   );
 
   const convite =
@@ -562,7 +551,8 @@ export function SalaDistancia({ codigo, conversa, aoSair }: { codigo: string; co
             </>
           ) : (
             <>
-              <strong>Vez do outro.</strong> Ele está escolhendo onde atirar.
+              <strong>Vez do outro.</strong>{" "}
+              {conexaoEstado !== "conectado" ? "" : outroPresente ? "Ele está escolhendo onde atirar." : "A partida continua quando ele voltar."}
             </>
           )}
         </p>

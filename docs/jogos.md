@@ -49,9 +49,11 @@ distância; na batalha naval, frente a frente com dois celulares e à distância
 - **Xadrez:** regras completas pela biblioteca `chess.js` (BSD-2-Clause). Empates automáticos:
   afogamento, material insuficiente, três repetições e 50 lances.
 - **Hex:** 9 por 9, sem a regra de troca (fica como combinado na ficha).
-- **Stop:** no mesmo aparelho é no papel (o site sorteia a letra, marca o tempo e soma os pontos com um
-  toque por categoria); à distância, cada um digita e o site compara. Pontos 10, 5 e 0; à distância,
-  cada um pode marcar "não vale" numa palavra do outro (a palavra vale 0 para quem a escreveu).
+- **Stop:** de 2 a 8 jogadores no mesmo aparelho, no papel (o site sorteia a letra, marca o tempo e soma
+  os pontos: cada um toca +10 ou +5 para cada palavra que valeu; os nomes, opcionais, ficam só no
+  aparelho). À distância, de 2 a 6, cada um digita e o site compara; cada um aparece como um bicho. Pontos
+  10 (ninguém mais escreveu), 5 (alguém escreveu igual) e 0; a palavra deixa de valer quando a maioria dos
+  outros marca "não vale" (veja docs/tempo-real.md).
 - **Jogo da onça:** grade 5 por 5 com diagonais e toca de 6 pontos (31 ao todo); onça no centro, 14
   cachorros; pulos emendados opcionais; os cachorros podem entrar na toca (o texto do MAE-UFPR diz que
   não; a ficha avisa). 80 jogadas sem captura é empate.

@@ -32,6 +32,7 @@ import {
 import { Desfazer, Seta } from "../Icones";
 import { PRINCIPAL, SECUNDARIO } from "../batalha/Montagem";
 import { BarraDaSala, ConviteDaSala, Conversa, SalaDeOutroJogo } from "./PecasDaSala";
+import { useTelaAcesa } from "./useTelaAcesa";
 
 /** O que o tabuleiro de cada jogo recebe. */
 export type PropsTabuleiro<E, J> = {
@@ -519,6 +520,9 @@ function SalaPorTurnos<E, J>({
   const jogadas = salvo?.partida.jogadas;
   const estado = useMemo(() => (jogadas ? reproduzir(motor, jogadas) : null), [motor, jogadas]);
 
+  // tela acesa até a partida acabar: tela apagada derruba a conexão
+  useTelaAcesa(!!salvo && salvo.partida.fase !== "fim" && !cheia && !outroJogo);
+
   if (outroJogo) return <SalaDeOutroJogo codigo={codigo} jogo={outroJogo} aoSair={aoSair} />;
   if (cheia) {
     return (
@@ -547,7 +551,19 @@ function SalaPorTurnos<E, J>({
     aoSair();
   };
 
-  const barra = <BarraDaSala codigo={codigo} conexao={conexaoEstado} outroPresente={outroPresente} aoSair={sair} />;
+  const barra = (
+    <BarraDaSala
+      codigo={codigo}
+      conexao={conexaoEstado}
+      outroPresente={outroPresente}
+      outroJaVeio={p.outro !== null}
+      emPartida={p.fase !== "fim"}
+      link={linkDaSala(codigo, motor.id)}
+      nomeDoJogo={config.nome}
+      aoSair={sair}
+      aoTentar={() => conexao.current?.reconectar()}
+    />
+  );
   const convite =
     p.papel === "criador" && !p.outro ? <ConviteDaSala codigo={codigo} link={linkDaSala(codigo, motor.id)} nomeDoJogo={config.nome} /> : null;
 
@@ -587,7 +603,17 @@ function SalaPorTurnos<E, J>({
               <Bolinha cor={lados[lado].cor} />
               <span>{lados[lado].voce}</span>
             </p>
-            <p className="m-0 text-[15px]">{minhaVez ? <strong>Sua vez.</strong> : "Vez do outro. Ele está pensando…"}</p>
+            <p className="m-0 text-[15px]">
+              {minhaVez ? (
+                <strong>Sua vez.</strong>
+              ) : conexaoEstado !== "conectado" ? (
+                "Vez do outro."
+              ) : outroPresente ? (
+                "Vez do outro. Ele está pensando…"
+              ) : (
+                "Vez do outro. A partida continua quando ele voltar."
+              )}
+            </p>
           </>
         )}
         {placar ? <p className={`m-0 text-sm ${resultado ? "text-white/90" : "text-suave"}`}>{placar}</p> : null}
