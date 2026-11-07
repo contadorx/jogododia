@@ -1,10 +1,43 @@
 {
   "id": "descubra-o-codigo",
   "nome": "Descubra o código",
-  "status": "em-breve",
+  "status": "disponivel",
   "ordem": 5,
   "idade": 8,
-  "modo": "cada-um-no-seu",
+  "modo": "mesmo-ou-distancia",
+  "jogadores": 2,
+  "minutos": "10 a 20",
   "treina": "Treina deduzir a partir de pistas e descartar possibilidades.",
-  "resumo": "Um inventa um código de 4 algarismos diferentes; o outro chuta, e as pistas dizem quantos estão no lugar certo e quantos estão fora do lugar."
+  "resumo": "Cada um inventa um código de 4 algarismos diferentes e tenta descobrir o do outro. As pistas dizem quantos estão no lugar certo e quantos estão fora do lugar.",
+  "precisa": [
+    "Um celular ou tablet com este jogo aberto: os dois jogam no mesmo, e cada um digita o seu código sem o outro ver",
+    "À distância: um aparelho para cada um, com internet. Um cria a sala e manda o código; o outro entra",
+    "Sem tela: papel e lápis para cada um, e alguém escondendo o papel do código"
+  ],
+  "passos": [
+    "Cada um escolhe um código secreto de 4 algarismos diferentes, como 3 8 1 5.",
+    "Na sua vez, chute o código do outro. A resposta diz quantos algarismos estão no lugar certo e quantos estão no código, mas em outro lugar. Ela não diz quais.",
+    "Use o rascunho para riscar os algarismos que você já descartou.",
+    "Ganha quem descobrir o código do outro primeiro. Se quem começou descobrir, o outro ainda tem um último palpite para empatar.",
+    "Cada um tem até 12 palpites. No fim, os dois códigos aparecem.",
+    "À distância é igual: o código fica só no seu aparelho, e o jogo responde aos palpites do outro sozinho."
+  ],
+  "combinados": [
+    "No mesmo aparelho, quem não está digitando o código vira o rosto.",
+    "No papel, a resposta precisa ser sempre a verdade: confiram juntos no fim."
+  ],
+  "conversa": [
+    "Qual foi o palpite que mais ajudou você? O que ele mostrou?",
+    "Quando a resposta foi \"nenhum algarismo do código\", quantos algarismos você conseguiu descartar de uma vez?",
+    "Com a melhor estratégia, dá para descobrir qualquer código em até 7 palpites. Como seria um bom primeiro palpite?"
+  ],
+  "base": "Variação com algarismos do jogo da senha, também chamada de touros e vacas. Um produto educacional de mestrado da UFC usa o jogo da senha para trabalhar raciocínio lógico.",
+  "evidencia": "B",
+  "fontes": [
+    {
+      "titulo": "Board games como atividades experimentais no aprendizado de análise combinatória e raciocínio lógico, produto educacional de mestrado (UFC, 2018)",
+      "url": "https://repositorio.ufc.br/ri/bitstream/riufc/36197/5/PE_2018_ERSANTOS.pdf"
+    }
+  ],
+  "revisao": null
 }

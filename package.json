@@ -7,7 +7,7 @@
     "dev": "next dev",
     "build": "next build && node scripts/gerar-sw.mjs",
     "preview": "npx --yes serve@14 out -l 4173",
-    "test": "node --experimental-strip-types --disable-warning=ExperimentalWarning --test scripts/testar-batalha.mjs scripts/testar-distancia.mjs",
+    "test": "node --experimental-strip-types --disable-warning=ExperimentalWarning --test scripts/testar-*.mjs",
     "icones": "node --experimental-strip-types --disable-warning=ExperimentalWarning scripts/gerar-icones.mjs",
     "og": "node --experimental-strip-types --disable-warning=ExperimentalWarning scripts/gerar-og.mjs",
     "typecheck": "tsc --noEmit"

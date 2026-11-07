@@ -1,10 +1,47 @@
 {
   "id": "nim",
   "nome": "Nim, o jogo dos palitos",
-  "status": "em-breve",
+  "status": "disponivel",
   "ordem": 8,
   "idade": 9,
-  "modo": "mesmo-aparelho",
+  "modo": "mesmo-ou-distancia",
+  "jogadores": 2,
+  "minutos": "5 a 15",
   "treina": "Treina procurar o padrão matemático que garante a vitória.",
-  "resumo": "Fileiras de palitos: na sua vez, tire quantos quiser de uma fileira só. Quem tirar o último ganha."
+  "resumo": "Fileiras de 1, 3, 5 e 7 palitos: na sua vez, tire quantos quiser de uma fileira só. Quem tirar o último ganha.",
+  "precisa": [
+    "Um celular ou tablet com este jogo aberto: os dois jogam no mesmo",
+    "À distância: um aparelho para cada um, com internet. Um cria a sala e manda o código; o outro entra",
+    "Prefere sem tela? 16 palitos de picolé, fósforos usados ou feijões, em fileiras de 1, 3, 5 e 7"
+  ],
+  "passos": [
+    "Arrumem os palitos em quatro fileiras: 1, 3, 5 e 7.",
+    "Na sua vez, tire quantos palitos quiser, mas todos da mesma fileira. Tirar pelo menos um é obrigatório.",
+    "No site, toque nos palitos que quer tirar e confirme no botão.",
+    "Quem tirar o último palito ganha.",
+    "Joguem várias partidas seguidas, trocando quem começa. O desafio de verdade é descobrir como ganhar sempre.",
+    "À distância é igual: o site sorteia quem começa e alterna nas revanches."
+  ],
+  "combinados": [
+    "Ninguém conta a estratégia pronta: a graça é descobrir. Combinem se o adulto pode dar uma pista a cada três partidas.",
+    "Variação para o papel: quem tirar o último perde. Muda tudo!"
+  ],
+  "conversa": [
+    "Teve alguma hora em que você já sabia que ia ganhar? Como estavam as fileiras?",
+    "Se sobrarem só duas fileiras iguais, como 3 e 3, quem está em vantagem: quem vai jogar ou o outro? Por quê?",
+    "Escreva quantos palitos tem cada fileira em binário (1 é 1, 3 é 11, 5 é 101, 7 é 111). O que acontece quando cada coluna tem uma quantidade par de algarismos 1?"
+  ],
+  "base": "Jogo antigo. Em 1901, o matemático Charles Bouton achou a regra que sempre ganha, usando números binários. A Revista do Professor de Matemática sugere o Nim para a sala de aula.",
+  "evidencia": "B",
+  "fontes": [
+    {
+      "titulo": "Jogo do Nim como facilitador no desenvolvimento do pensamento científico, Revista do Professor de Matemática nº 103 (SBM)",
+      "url": "https://rpm.org.br/rpm/img/conteudo/files/Jogo%20do%20Nim.pdf"
+    },
+    {
+      "titulo": "Nim, a game with a complete mathematical theory, de Charles Bouton (Annals of Mathematics, 1901)",
+      "url": "https://sites.ualberta.ca/~hayward/cgt/asn/bouton1901.pdf"
+    }
+  ],
+  "revisao": null
 }

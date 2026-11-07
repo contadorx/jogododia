@@ -1,10 +1,48 @@
 {
   "id": "mancala",
   "nome": "Mancala (awalé)",
-  "status": "em-breve",
+  "status": "disponivel",
   "ordem": 3,
   "idade": 7,
-  "modo": "mesmo-aparelho",
+  "modo": "mesmo-ou-distancia",
+  "jogadores": 2,
+  "minutos": "15 a 25",
   "treina": "Treina contar e calcular de cabeça para planejar onde cada semente vai cair.",
-  "resumo": "Jogo de origem africana: as sementes são semeadas de casa em casa, e ganha quem colher mais."
+  "resumo": "Jogo de origem africana: as sementes são semeadas de casa em casa, e ganha quem colher mais.",
+  "precisa": [
+    "Um celular ou tablet com este jogo aberto: os dois jogam no mesmo",
+    "À distância: um aparelho para cada um, com internet. Um cria a sala e manda o código; o outro entra",
+    "Sem tela: uma caixa de ovos de 12 lugares e 48 grãos de feijão"
+  ],
+  "passos": [
+    "Cada um tem as 6 casas do seu lado, com 4 sementes em cada. No mesmo aparelho, o azul fica com as casas de baixo e começa.",
+    "Na sua vez, pegue todas as sementes de uma casa sua e solte uma em cada casa seguinte, no sentido contrário ao do relógio. Se a casa tinha 12 ou mais, ela é pulada na volta.",
+    "Se a última semente cair numa casa do outro e ela ficar com 2 ou 3 sementes, você colhe essas sementes.",
+    "Olhe também a casa anterior: se é do outro e ficou com 2 ou 3, colha. Continue voltando até achar uma casa que não tenha 2 ou 3.",
+    "Ninguém pode deixar o outro sem sementes: se a colheita fosse levar todas as dele, ela não acontece. E se o outro já está sem nenhuma, você tem que jogar uma casa que chegue até ele.",
+    "Ganha quem colher 25 sementes. Se ninguém conseguir mais levar sementes para o outro, ou depois de 50 jogadas sem colheita, cada um fica com as do seu lado e conta.",
+    "À distância é igual: o site sorteia quem começa e alterna nas revanches."
+  ],
+  "combinados": [
+    "Nas primeiras partidas, contem as sementes em voz alta enquanto semeiam.",
+    "Antes de jogar, tente prever onde a última semente vai cair: esse é o coração do jogo."
+  ],
+  "conversa": [
+    "Você conseguiu prever onde a última semente ia cair antes de jogar? Como contou?",
+    "Quando juntar muitas sementes numa casa só ajudou? E quando atrapalhou?",
+    "Jogos de semear como este são jogados há séculos em vários países da África, com nomes diferentes. Que outros jogos vocês conhecem que vieram da África?"
+  ],
+  "base": "Família de jogos de semear de origem africana. Usamos o awalé (oware abapa). Uma dissertação da UFC (2011) levou o awalé para aulas de matemática em duas escolas municipais.",
+  "evidencia": "A",
+  "fontes": [
+    {
+      "titulo": "O jogo africano Mancala e o ensino de matemática em face da Lei 10.639/03, dissertação de mestrado (UFC, 2011)",
+      "url": "https://repositorio.ufc.br/handle/riufc/3223"
+    },
+    {
+      "titulo": "Plano de aula Brincadeiras e jogos de matriz africana, 5º ano, habilidade EF35EF01 da BNCC, na Nova Escola",
+      "url": "https://novaescola.org.br/planos-de-aula/fundamental/5ano/educacao-fisica/brincadeiras-e-jogos-de-matriz-africana/6544"
+    }
+  ],
+  "revisao": null
 }

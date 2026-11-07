@@ -1,10 +1,46 @@
 {
   "id": "pontinhos",
   "nome": "Pontinhos",
-  "status": "em-breve",
+  "status": "disponivel",
   "ordem": 7,
   "idade": 7,
-  "modo": "mesmo-aparelho",
+  "modo": "mesmo-ou-distancia",
+  "jogadores": 2,
+  "minutos": "10 a 15",
   "treina": "Treina contar e prever quem vai conseguir fechar cada quadrado.",
-  "resumo": "Na sua vez, ligue dois pontos vizinhos; quem fecha um quadrado marca ponto e joga de novo."
+  "resumo": "Na sua vez, ligue dois pontos vizinhos; quem fecha um quadrado marca ponto e joga de novo.",
+  "precisa": [
+    "Um celular ou tablet com este jogo aberto: os dois jogam no mesmo",
+    "À distância: um aparelho para cada um, com internet. Um cria a sala e manda o código; o outro entra",
+    "Sem tela: papel com uma grade de 5 por 5 pontos e duas canetas de cores diferentes"
+  ],
+  "passos": [
+    "A grade tem 25 pontos, que formam 16 quadrados.",
+    "Na sua vez, ligue dois pontos vizinhos com uma linha deitada ou em pé (nunca na diagonal).",
+    "Quem faz o quarto lado de um quadrado fica com ele e joga de novo.",
+    "Quando todas as linhas estiverem feitas, ganha quem tiver mais quadrados. 8 a 8 é empate.",
+    "À distância é igual: o site sorteia quem começa e alterna nas revanches."
+  ],
+  "combinados": [
+    "Fechar um quadrado não é obrigatório: às vezes deixar um para o outro é a melhor jogada.",
+    "No papel, quem fecha escreve a sua inicial dentro do quadrado."
+  ],
+  "conversa": [
+    "Quando você evitou fazer o terceiro lado de um quadrado? Por quê?",
+    "No fim, apareceram corredores de quadrados. Quem ficou com o corredor maior?",
+    "Vale a pena dar dois quadrados para o outro e ficar com um corredor inteiro depois?"
+  ],
+  "base": "Jogo tradicional de papel e lápis, proposto em atividade de matemática da educação de Portugal. O matemático Elwyn Berlekamp escreveu um livro inteiro sobre a estratégia.",
+  "evidencia": "B",
+  "fontes": [
+    {
+      "titulo": "Jogos Matemáticos (#EstudoEmCasa), com o jogo Pontos e Quadrados, da Direção-Geral da Educação de Portugal",
+      "url": "https://estudoautonomo.dge.mec.pt/sites/default/files/inline-files/55_MACS_10_Ano_Jogos%20matem%C3%A1ticos.pdf"
+    },
+    {
+      "titulo": "The Dots and Boxes Game: Sophisticated Child's Play, de Elwyn Berlekamp (2000)",
+      "url": "https://www.routledge.com/The-Dots-and-Boxes-Game-Sophisticated-Childs-Play/Berlekamp/p/book/9781568811291"
+    }
+  ],
+  "revisao": null
 }

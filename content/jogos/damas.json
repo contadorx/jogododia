@@ -1,10 +1,49 @@
 {
   "id": "damas",
   "nome": "Damas",
-  "status": "em-breve",
+  "status": "disponivel",
   "ordem": 6,
   "idade": 7,
-  "modo": "mesmo-aparelho",
+  "modo": "mesmo-ou-distancia",
+  "jogadores": 2,
+  "minutos": "15 a 30",
   "treina": "Treina antecipar jogadas e calcular trocas de peças.",
-  "resumo": "As peças andam na diagonal e capturam pulando a do outro; quem chega do outro lado vira dama."
+  "resumo": "As peças andam na diagonal e capturam pulando a do outro; quem chega do outro lado vira dama.",
+  "precisa": [
+    "Um celular ou tablet com este jogo aberto: os dois jogam no mesmo",
+    "À distância: um aparelho para cada um, com internet. Um cria a sala e manda o código; o outro entra",
+    "Sem tela: um tabuleiro de damas, ou um de xadrez com 12 tampinhas de cada cor"
+  ],
+  "passos": [
+    "Cada um tem 12 pedras nas casas escuras. A casa escura do canto fica à esquerda de cada jogador. As brancas começam.",
+    "A pedra anda uma casa na diagonal, para a frente.",
+    "Para capturar, pule a peça do outro que está ao lado, na diagonal, caindo na casa livre logo depois. A pedra pode capturar para trás também.",
+    "Depois de capturar, se der para capturar de novo com a mesma peça, continue no mesmo lance.",
+    "Capturar é obrigatório. Se houver mais de um jeito, vale o que captura mais peças (a lei da maioria). O site mostra quais peças podem jogar.",
+    "A pedra que termina o lance na última fileira vira dama: anda quantas casas quiser na diagonal e captura de longe.",
+    "Ganha quem capturar todas as peças do outro ou deixar o outro sem lance. 20 lances seguidos só de damas, sem captura, é empate.",
+    "À distância é igual: o site sorteia quem começa e alterna nas revanches."
+  ],
+  "combinados": [
+    "Essa é a regra brasileira, a das competições. Em outros países, a pedra não captura para trás: combinem antes se forem jogar no tabuleiro de casa.",
+    "Antes de mexer, olhe se o outro vai poder capturar depois do seu lance."
+  ],
+  "conversa": [
+    "Teve algum lance em que você entregou uma peça de propósito para capturar duas depois?",
+    "O que muda no jogo quando aparece a primeira dama?",
+    "Por que as peças das bordas são mais difíceis de capturar?"
+  ],
+  "base": "Jogo tradicional, esporte no Brasil desde os anos 1930. Usamos a regra brasileira, a das competições. A rede municipal de Taubaté (SP) usa as damas nas aulas do 6º ano.",
+  "evidencia": "B",
+  "fontes": [
+    {
+      "titulo": "Jogo de dama, atividade de educação física do 6º ano (Prefeitura de Taubaté, SP)",
+      "url": "https://taubate.sp.gov.br/wp-content/uploads/2020/06/6º-ano-EDUCAÇÃO-FÍSICA-ativ.-11-Jogo-de-dama.pdf"
+    },
+    {
+      "titulo": "Regulamento de damas dos Jogos Fenae 2025, com as regras da Confederação Brasileira de Damas",
+      "url": "https://jogosfenaemais2025.fenae.org.br/portal/data/files/D3/91/C9/01/FBFB9910DF8D1699403A91A8/Regulamento-Damas.pdf"
+    }
+  ],
+  "revisao": null
 }

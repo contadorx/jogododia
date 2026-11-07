@@ -9,7 +9,6 @@
  * abra o site em localhost com ?relay=ws://localhost:8787. Fora do localhost isso é ignorado.
  */
 import { SITE } from "@/config/site";
-import { ehMensagem, type Msg } from "./protocolo";
 
 /** Letras e números sem os que se confundem (O e 0, I e 1). */
 export const ALFABETO = "ABCDEFGHJKLMNPQRSTUVWXYZ23456789";
@@ -35,8 +34,8 @@ export function novoId(): string {
   return Array.from(n, (x) => x.toString(16)).join("-");
 }
 
-export function linkDaSala(codigo: string): string {
-  return `${window.location.origin}/jogos/batalha-naval/jogar/?sala=${codigo}`;
+export function linkDaSala(codigo: string, jogo = "batalha-naval"): string {
+  return `${window.location.origin}/jogos/${jogo}/jogar/?sala=${codigo}`;
 }
 
 /**
@@ -61,21 +60,24 @@ export async function servidorNoAr(): Promise<boolean> {
 export type EstadoConexao = "conectando" | "conectado" | "caiu";
 export type Membro = { id: string; desde: number };
 
-export type Eventos = {
-  aoMensagem: (msg: Msg, de: string) => void;
+export type Eventos<M> = {
+  aoMensagem: (msg: M, de: string) => void;
   /** Quem está na sala agora (inclui você). */
   aoPresenca: (membros: Membro[]) => void;
   aoEstado: (estado: EstadoConexao, detalhe?: string) => void;
 };
 
-export type Conexao = { enviar: (msg: Msg) => void; sair: () => void };
+export type Conexao<M> = { enviar: (msg: M) => void; sair: () => void };
 
-export async function entrar(codigo: string, meuId: string, eventos: Eventos): Promise<Conexao> {
+/** `canal`: um por jogo (a mesma sala nunca mistura jogos). `validar`: confere o que chega pela rede. */
+export type Opcoes<M> = { canal: string; validar: (x: unknown) => x is M };
+
+export async function entrar<M>(codigo: string, meuId: string, eventos: Eventos<M>, opcoes: Opcoes<M>): Promise<Conexao<M>> {
   const relay = relayDeTeste();
-  return relay ? entrarNoRelay(relay, codigo, meuId, eventos) : entrarNoSupabase(codigo, meuId, eventos);
+  return relay ? entrarNoRelay(relay, codigo, meuId, eventos, opcoes) : entrarNoSupabase(codigo, meuId, eventos, opcoes);
 }
 
-async function entrarNoSupabase(codigo: string, meuId: string, eventos: Eventos): Promise<Conexao> {
+async function entrarNoSupabase<M>(codigo: string, meuId: string, eventos: Eventos<M>, opcoes: Opcoes<M>): Promise<Conexao<M>> {
   eventos.aoEstado("conectando");
   const { createClient } = await import("@supabase/supabase-js");
   const cliente = createClient(SITE.tempoReal.url, SITE.tempoReal.chave, {
@@ -83,14 +85,14 @@ async function entrarNoSupabase(codigo: string, meuId: string, eventos: Eventos)
     auth: { persistSession: false, autoRefreshToken: false, detectSessionInUrl: false },
   });
   const desde = Date.now();
-  const canal = cliente.channel(`batalha-${codigo}`, {
+  const canal = cliente.channel(`${opcoes.canal}-${codigo}`, {
     config: { broadcast: { self: false }, presence: { key: meuId } },
   });
 
   canal
     .on("broadcast", { event: "jogo" }, ({ payload }) => {
       const p = payload as { de?: unknown; msg?: unknown } | null;
-      if (p && typeof p.de === "string" && p.de !== meuId && ehMensagem(p.msg)) eventos.aoMensagem(p.msg, p.de);
+      if (p && typeof p.de === "string" && p.de !== meuId && opcoes.validar(p.msg)) eventos.aoMensagem(p.msg, p.de);
     })
     .on("presence", { event: "sync" }, () => {
       const estado = canal.presenceState<{ desde?: number }>();
@@ -126,12 +128,12 @@ function relayDeTeste(): string | null {
   return relay && /^ws:\/\/(localhost|127\.0\.0\.1):\d+$/.test(relay) ? relay : null;
 }
 
-async function entrarNoRelay(url: string, codigo: string, meuId: string, eventos: Eventos): Promise<Conexao> {
+async function entrarNoRelay<M>(url: string, codigo: string, meuId: string, eventos: Eventos<M>, opcoes: Opcoes<M>): Promise<Conexao<M>> {
   eventos.aoEstado("conectando");
   let ws: WebSocket | null = null;
   let saiu = false;
   const conectar = () => {
-    ws = new WebSocket(`${url}/?sala=${codigo}&id=${encodeURIComponent(meuId)}`);
+    ws = new WebSocket(`${url}/?sala=${opcoes.canal}-${codigo}&id=${encodeURIComponent(meuId)}`);
     ws.onopen = () => eventos.aoEstado("conectado");
     ws.onclose = () => {
       if (saiu) return;
@@ -141,7 +143,7 @@ async function entrarNoRelay(url: string, codigo: string, meuId: string, eventos
     ws.onmessage = (e) => {
       const d = JSON.parse(String(e.data)) as { tipo: string; membros?: Membro[]; de?: string; msg?: unknown };
       if (d.tipo === "presenca" && d.membros) eventos.aoPresenca(d.membros);
-      else if (d.tipo === "msg" && typeof d.de === "string" && d.de !== meuId && ehMensagem(d.msg)) eventos.aoMensagem(d.msg, d.de);
+      else if (d.tipo === "msg" && typeof d.de === "string" && d.de !== meuId && opcoes.validar(d.msg)) eventos.aoMensagem(d.msg, d.de);
     };
   };
   conectar();

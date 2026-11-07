@@ -158,3 +158,29 @@ button:not(:disabled),
     opacity: 0;
   }
 }
+
+/* Jogos por turnos: a peça do quatro em linha caindo (a distância vem em --de). */
+.cai {
+  animation: cai 0.32s cubic-bezier(0.55, 0, 1, 0.45);
+}
+@keyframes cai {
+  from {
+    transform: translateY(var(--de, -300%));
+  }
+}
+
+/* Uma casa que acabou de mudar (semeadura, colheita). */
+.pisca {
+  animation: pisca 0.9s ease-out;
+}
+@keyframes pisca {
+  0% {
+    box-shadow: 0 0 0 0 var(--color-sol);
+  }
+  40% {
+    box-shadow: 0 0 0 6px var(--color-sol);
+  }
+  100% {
+    box-shadow: 0 0 0 0 transparent;
+  }
+}

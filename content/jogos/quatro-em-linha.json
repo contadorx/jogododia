@@ -1,10 +1,43 @@
 {
   "id": "quatro-em-linha",
   "nome": "Quatro em linha",
-  "status": "em-breve",
+  "status": "disponivel",
   "ordem": 4,
   "idade": 7,
-  "modo": "mesmo-aparelho",
+  "modo": "mesmo-ou-distancia",
+  "jogadores": 2,
+  "minutos": "5 a 10",
   "treina": "Treina reconhecer padrões e bloquear o plano do outro sem esquecer o seu.",
-  "resumo": "Cada um solta suas peças numa grade em pé; ganha quem alinhar quatro primeiro, em qualquer direção."
+  "resumo": "Cada um solta suas peças numa grade em pé; ganha quem alinhar quatro primeiro, em qualquer direção.",
+  "precisa": [
+    "Um celular ou tablet com este jogo aberto: os dois jogam no mesmo",
+    "À distância: um aparelho para cada um, com internet. Um cria a sala e manda o código; o outro entra",
+    "Sem tela: uma folha quadriculada com 7 colunas por 6 linhas e duas canetas de cores diferentes. A peça sempre fica na casa livre mais baixa da coluna"
+  ],
+  "passos": [
+    "Decidam quem fica com as vermelhas. As vermelhas começam.",
+    "Na sua vez, toque numa coluna: a peça cai até a casa livre mais baixa.",
+    "Ganha quem alinhar 4 peças da sua cor: deitadas, em pé ou na diagonal.",
+    "Se a grade encher sem ninguém alinhar, é empate.",
+    "Na partida seguinte, troquem quem começa.",
+    "À distância é igual: o site sorteia quem começa e alterna nas revanches."
+  ],
+  "combinados": [
+    "O botão Desfazer serve para corrigir um toque errado. Usar para voltar uma jogada ruim? Combinem antes.",
+    "Antes de soltar a peça, olhe se o outro está a uma peça de alinhar."
+  ],
+  "conversa": [
+    "Em que momento você percebeu que o outro ia conseguir alinhar?",
+    "Teve alguma jogada que criou duas ameaças ao mesmo tempo? O que o outro pôde fazer?",
+    "Por que a coluna do meio costuma ser boa para começar?"
+  ],
+  "base": "Parente do jogo da velha, com a gravidade puxando as peças. Em 1988 foi provado que quem começa sempre pode ganhar, se abrir na coluna do meio e jogar sem errar.",
+  "evidencia": "C",
+  "fontes": [
+    {
+      "titulo": "Aula sobre quatro em linha do curso The Mathematics in Toys and Games (MIT OpenCourseWare, 2010)",
+      "url": "https://ocw.mit.edu/courses/es-268-the-mathematics-in-toys-and-games-spring-2010/94a5d1da64c57cbc5fdf135d985445a9_MITES_268S10_Ses5_ConFour.pdf"
+    }
+  ],
+  "revisao": null
 }

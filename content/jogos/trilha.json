@@ -1,10 +1,48 @@
 {
   "id": "trilha",
   "nome": "Trilha",
-  "status": "em-breve",
+  "status": "disponivel",
   "ordem": 9,
   "idade": 8,
-  "modo": "mesmo-aparelho",
+  "modo": "mesmo-ou-distancia",
+  "jogadores": 2,
+  "minutos": "15 a 25",
   "treina": "Treina planejar em etapas e defender ao mesmo tempo.",
-  "resumo": "Quem forma uma linha de três peças tira uma do outro; perde quem ficar com só duas."
+  "resumo": "Quem forma uma linha de três peças tira uma do outro; perde quem ficar com só duas.",
+  "precisa": [
+    "Um celular ou tablet com este jogo aberto: os dois jogam no mesmo",
+    "À distância: um aparelho para cada um, com internet. Um cria a sala e manda o código; o outro entra",
+    "Sem tela: o tabuleiro desenhado num papel (três quadrados, um dentro do outro, ligados pelo meio dos lados) e 9 tampinhas de cada cor"
+  ],
+  "passos": [
+    "Cada um tem 9 peças. As brancas começam.",
+    "Primeiro, cada um põe uma peça por vez num ponto livre, até pôr as 9.",
+    "Depois, cada um move uma peça por vez para um ponto vizinho livre, seguindo as linhas.",
+    "Três peças suas em linha formam um moinho: tire uma peça do outro. Peças que estão num moinho ficam protegidas, a não ser que todas estejam.",
+    "Quem fica com só 3 peças pode voar: mover uma peça para qualquer ponto livre.",
+    "Perde quem ficar com 2 peças ou sem nenhuma peça para mover. 50 jogadas seguidas sem ninguém tirar peça é empate.",
+    "À distância é igual: o site sorteia quem começa e alterna nas revanches."
+  ],
+  "combinados": [
+    "Abrir e fechar o mesmo moinho várias vezes vale: é uma das melhores jogadas do jogo.",
+    "Variação para quem está começando: sem voar com 3 peças."
+  ],
+  "conversa": [
+    "Na fase de pôr as peças, você pensou mais em fazer o seu moinho ou em impedir o do outro?",
+    "Teve alguma peça que ficou presa sem poder andar? Como isso aconteceu?",
+    "Vale mais a pena tirar uma peça que ameaça fazer moinho ou uma que está bloqueando você?"
+  ],
+  "base": "Jogo de tabuleiro antigo, da família dos moinhos, jogado em muitos países. Uma escola municipal de Curitiba usou as regras da trilha numa atividade do 5º ano.",
+  "evidencia": "B",
+  "fontes": [
+    {
+      "titulo": "Jogo da trilha, atividade do 5º ano da Escola Municipal Maringá (Prefeitura de Curitiba, 2021)",
+      "url": "https://mid-educacao.curitiba.pr.gov.br/2021/5/pdf/00296218.pdf"
+    },
+    {
+      "titulo": "Jogos de tabuleiro, material de educação física do 6º ano (Prefeitura de São José do Vale do Rio Preto, RJ)",
+      "url": "https://www.sjvriopreto.rj.gov.br/uploads/paginadinamica/33721/Educao_Fsica___6_ano___17_08_a__28_08.pdf"
+    }
+  ],
+  "revisao": null
 }

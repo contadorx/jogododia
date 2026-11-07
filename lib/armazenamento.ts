@@ -40,6 +40,16 @@ export function apagar(chave: string) {
   }
 }
 
+/**
+ * De que jogo é a sala guardada com este código (null se não houver). As salas da batalha naval,
+ * as primeiras, não têm o campo "jogo".
+ */
+export function jogoDaSalaGuardada(codigo: string): string | null {
+  const s = ler<{ v?: unknown; jogo?: unknown; partida?: { codigo?: unknown } }>(chaveDaSala(codigo));
+  if (!s || s.v !== 1 || s.partida?.codigo !== codigo) return null;
+  return typeof s.jogo === "string" ? s.jogo : "batalha-naval";
+}
+
 /** Códigos das salas guardadas neste aparelho. */
 export function salasGuardadas(): string[] {
   try {

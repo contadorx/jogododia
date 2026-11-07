@@ -3,10 +3,12 @@
 import Link from "next/link";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { coordenada, frotaCompleta, navio, situacaoDaFrota, type Posicao } from "@/lib/batalha";
-import { CHAVES, chaveDaSala, gravar, ler, salasGuardadas } from "@/lib/armazenamento";
+import { CHAVES, chaveDaSala, gravar, jogoDaSalaGuardada, ler, salasGuardadas } from "@/lib/armazenamento";
 import { evento } from "@/lib/metricas";
+import { SalaDeOutroJogo } from "../jogos/PecasDaSala";
 import {
   atirar,
+  ehMensagem,
   ficarPronto,
   novaSala,
   receber,
@@ -209,11 +211,12 @@ function textoDoEvento(e: Evento): string {
 export function SalaDistancia({ codigo, conversa, aoSair }: { codigo: string; conversa: readonly string[]; aoSair: () => void }) {
   const [salvo, setSalvo] = useState<Salvo | null>(null);
   const ref = useRef<Salvo | null>(null);
-  const conexao = useRef<Conexao | null>(null);
+  const conexao = useRef<Conexao<Msg> | null>(null);
   const membrosRef = useRef<Membro[]>([]);
   const [conexaoEstado, setConexaoEstado] = useState<EstadoConexao>("conectando");
   const [membros, setMembros] = useState<Membro[]>([]);
   const [cheia, setCheia] = useState(false);
+  const [outroJogo, setOutroJogo] = useState<string | null>(null);
   const [aba, setAba] = useState<"atacar" | "defender">("atacar");
   const [alvo, setAlvo] = useState<number | null>(null);
   const [copiado, setCopiado] = useState(false);
@@ -249,6 +252,11 @@ export function SalaDistancia({ codigo, conversa, aoSair }: { codigo: string; co
 
   // carrega a sala guardada (ou entra como convidado, quando veio pelo link)
   useEffect(() => {
+    const dono = jogoDaSalaGuardada(codigo);
+    if (dono && dono !== "batalha-naval") {
+      setOutroJogo(dono);
+      return;
+    }
     const guardado = ler<Salvo>(chaveDaSala(codigo));
     const s = salvoValido(guardado, codigo) ? guardado : novoSalvo(novaSala(codigo, "convidado", novoId()));
     guardar(s);
@@ -284,7 +292,7 @@ export function SalaDistancia({ codigo, conversa, aoSair }: { codigo: string; co
         setConexaoEstado(estado);
         if (estado === "conectado" && ref.current) enviar(reenviar(ref.current.partida));
       },
-    })
+    }, { canal: "batalha", validar: ehMensagem })
       .then((c) => {
         if (ativo) conexao.current = c;
         else c.sair();
@@ -317,6 +325,8 @@ export function SalaDistancia({ codigo, conversa, aoSair }: { codigo: string; co
     if (vez === "outro") setAba("defender");
     setAlvo(null);
   }, [vez]);
+
+  if (outroJogo) return <SalaDeOutroJogo codigo={codigo} jogo={outroJogo} aoSair={aoSair} />;
 
   if (cheia) {
     return (

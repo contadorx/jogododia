@@ -1,10 +1,46 @@
 {
   "id": "hex",
   "nome": "Hex",
-  "status": "em-breve",
+  "status": "disponivel",
   "ordem": 10,
   "idade": 9,
-  "modo": "mesmo-aparelho",
+  "modo": "mesmo-ou-distancia",
+  "jogadores": 2,
+  "minutos": "10 a 20",
   "treina": "Treina pensar em caminhos e bloqueios num tabuleiro de hexágonos.",
-  "resumo": "Cada um tenta ligar os seus dois lados do tabuleiro. Nunca termina empatado."
+  "resumo": "Cada um tenta ligar os seus dois lados do tabuleiro com um caminho de peças. Nunca termina empatado.",
+  "precisa": [
+    "Um celular ou tablet com este jogo aberto: os dois jogam no mesmo",
+    "À distância: um aparelho para cada um, com internet. Um cria a sala e manda o código; o outro entra",
+    "Sem tela: uma folha com um losango de 9 por 9 hexágonos e duas canetas de cores diferentes"
+  ],
+  "passos": [
+    "O tabuleiro é um losango de hexágonos. Duas bordas são vermelhas e duas são azuis.",
+    "O vermelho começa. Na sua vez, ponha uma peça da sua cor em qualquer casa livre. As peças nunca saem do lugar.",
+    "Ganha quem formar um caminho de peças suas, casa vizinha com casa vizinha, ligando as duas bordas da sua cor.",
+    "Não tem empate: quando um fecha o seu caminho, o outro fica bloqueado de vez.",
+    "À distância é igual: o site sorteia quem começa e alterna nas revanches."
+  ],
+  "combinados": [
+    "Quem começa tem vantagem: troquem quem começa a cada partida.",
+    "Para adultos experientes, uma regra de equilíbrio: depois da primeira peça, o outro pode trocar de cor com quem começou."
+  ],
+  "conversa": [
+    "Teve alguma hora em que você bloqueou o outro e, com a mesma peça, avançou o seu caminho?",
+    "Duas peças suas com duas casas livres entre elas formam uma ponte: se o outro ocupar uma casa, você ocupa a outra. Você usou alguma ponte?",
+    "Por que será que o Hex nunca termina empatado?"
+  ],
+  "base": "Inventado pelo dinamarquês Piet Hein em 1942 e, de novo, por John Nash em 1948. Nunca termina empatado. A Matemateca do IME-USP o expõe e o indica para a sala de aula.",
+  "evidencia": "B",
+  "fontes": [
+    {
+      "titulo": "Hex, no acervo da Matemateca do Instituto de Matemática e Estatística da USP",
+      "url": "https://matemateca.ime.usp.br/acervo/jogo_hex_ingles.html"
+    },
+    {
+      "titulo": "Hex: conexões extremas em ladrilhos hexagonais, minicurso da V Bienal da Sociedade Brasileira de Matemática (2010)",
+      "url": "https://mat.ufpb.br/bienalsbm/arquivos/Mini-Cursos/Izaabelly-UFPE/Resumo-Hex.pdf"
+    }
+  ],
+  "revisao": null
 }

@@ -19,6 +19,7 @@ export const EVIDENCIAS = {
 export const MODOS = {
   "cada-um-no-seu": "Cada um no seu aparelho",
   "mesmo-aparelho": "Os dois no mesmo aparelho",
+  "mesmo-ou-distancia": "No mesmo aparelho ou à distância",
   papel: "No papel",
 } as const;
 
@@ -45,7 +46,7 @@ const Comum = z.object({
   ordem: z.number().int().min(1),
   /** Idade mínima sugerida. */
   idade: z.number().int().min(5).max(12),
-  modo: z.enum(["cada-um-no-seu", "mesmo-aparelho", "papel"]),
+  modo: z.enum(["cada-um-no-seu", "mesmo-aparelho", "mesmo-ou-distancia", "papel"]),
   treina: z.string().startsWith("Treina ", 'comece com "Treina"').max(160),
   resumo: z.string().min(10).max(200),
 });
