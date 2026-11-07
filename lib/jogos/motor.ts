@@ -29,10 +29,24 @@ export interface Motor<E, J> {
 
 export const outroLado = (l: Lado): Lado => (l === 0 ? 1 : 0);
 
+/**
+ * Lembra os estados da última lista de jogadas de cada jogo. Como a partida só cresce (ou volta uma
+ * jogada no desfazer), refazer a lista inteira a cada lance seria desperdício: no xadrez, cada lance
+ * passa pela biblioteca de regras. Os estados nunca são alterados depois de criados, então dá para
+ * reaproveitar.
+ */
+const memoria = new WeakMap<object, { chaves: string[]; estados: unknown[] }>();
+
 export function reproduzir<E, J>(motor: Motor<E, J>, jogadas: readonly J[]): E {
-  let e = motor.inicial();
-  for (const j of jogadas) e = motor.aplicar(e, j);
-  return e;
+  const chaves = jogadas.map((j) => JSON.stringify(j));
+  const m = memoria.get(motor) ?? { chaves: [], estados: [motor.inicial()] };
+  let k = 0;
+  const limite = Math.min(m.chaves.length, chaves.length);
+  while (k < limite && m.chaves[k] === chaves[k]) k++;
+  const estados = m.estados.slice(0, k + 1) as E[];
+  for (let i = k; i < jogadas.length; i++) estados.push(motor.aplicar(estados[i], jogadas[i]));
+  memoria.set(motor, { chaves, estados });
+  return estados[jogadas.length];
 }
 
 /** Inteiro entre min e max (inclusive), para conferir dados que chegam pela rede. */

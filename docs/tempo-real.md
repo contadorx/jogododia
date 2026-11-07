@@ -1,15 +1,28 @@
 # Partida à distância
 
-A batalha naval tem dois modos: **frente a frente** (cada um no seu celular, falando as coordenadas,
-sem nenhuma conexão) e **à distância** (cada um na sua casa, numa sala com código). Este documento é
-sobre o segundo.
+Todos os jogos têm o modo **à distância** (cada um na sua casa, numa sala com código). O outro modo é
+**no mesmo aparelho**, ou, na batalha naval, **frente a frente** com dois celulares e as coordenadas
+faladas, sem nenhuma conexão. Este documento é sobre o modo à distância.
+
+- **Batalha naval:** protocolo próprio (`lib/protocolo.ts`), porque cada um esconde a sua frota.
+- **Os outros 9 jogos:** um protocolo só (`lib/jogos/turnos.ts`). Os dois aparelhos guardam a mesma
+  lista de lances; cada lance leva a sua posição na lista, o repetido é ignorado e o que faltar é pedido
+  de novo. A cada 4 segundos os dois contam até onde têm, e quem estiver na frente reenvia. Cada jogo
+  tem o seu canal (`<jogo>-<código>`), então um código de damas nunca cai numa sala de xadrez.
+- **Descubra o código:** o código secreto fica só no aparelho de quem escolheu. O aparelho responde
+  sozinho aos palpites do outro e só manda o código no fim, para o outro ver.
+- **Stop:** protocolo próprio (`lib/jogos/stop.ts`), porque os dois escrevem ao mesmo tempo. O criador
+  manda a letra de cada rodada; cada aparelho manda o seu estado da rodada: as respostas (só depois do
+  Stop ou do fim do tempo), as palavras do outro que não aceita e se está pronto para a próxima. Tudo se
+  repete a cada 4 segundos, e cada mensagem diz se já tem as respostas do outro, para ninguém ficar
+  respondendo à toa.
 
 ## Como funciona
 
 - Um jogador cria a sala e recebe um código de 6 letras e números, sem os que se confundem (O e 0,
   I e 1). Manda o código ou o link pelo WhatsApp; o outro entra.
 - Sem cadastro, sem nome e **sem chat**: só passam pela rede o código da sala, um número sorteado para
-  cada aparelho e as jogadas (coordenadas e respostas).
+  cada aparelho e as jogadas (lances, coordenadas, palpites e respostas).
 - Quem recebe o tiro responde sozinho, a partir da própria frota, como no jogo falado. Cada aparelho
   guarda só o seu lado da partida (localStorage), então dá para fechar o navegador e voltar pelo código.
 - A sala aceita dois jogadores; um terceiro que entrar com o código vê "sala cheia".

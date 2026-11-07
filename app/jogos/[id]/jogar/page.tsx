@@ -8,12 +8,17 @@ import { Cabecalho } from "@/components/Cabecalho";
 import { Voltar } from "@/components/Icones";
 import { JogarCodigo } from "@/components/jogos/Codigo";
 import { JogarDamas } from "@/components/jogos/Damas";
+import { JogarGo } from "@/components/jogos/Go";
 import { JogarHex } from "@/components/jogos/Hex";
 import { JogarMancala } from "@/components/jogos/Mancala";
 import { JogarNim } from "@/components/jogos/Nim";
+import { JogarOnca } from "@/components/jogos/Onca";
 import { JogarPontinhos } from "@/components/jogos/Pontinhos";
+import { JogarStop } from "@/components/jogos/Stop";
 import { JogarQuatroEmLinha } from "@/components/jogos/QuatroEmLinha";
+import { JogarReversi } from "@/components/jogos/Reversi";
 import { JogarTrilha } from "@/components/jogos/Trilha";
+import { JogarXadrez } from "@/components/jogos/Xadrez";
 import { Rodape } from "@/components/Rodape";
 import { jogoDisponivel } from "@/lib/conteudo";
 import { JOGAVEIS, temVersaoNoSite, type Jogavel } from "@/lib/jogaveis";
@@ -21,6 +26,7 @@ import { JOGAVEIS, temVersaoNoSite, type Jogavel } from "@/lib/jogaveis";
 /** O componente de cada jogo. Só o do jogo aberto é baixado pelo navegador. */
 const JOGOS: Record<Jogavel, ComponentType<{ conversa: readonly string[] }>> = {
   "batalha-naval": JogarBatalha,
+  xadrez: JogarXadrez,
   mancala: JogarMancala,
   "quatro-em-linha": JogarQuatroEmLinha,
   "descubra-o-codigo": JogarCodigo,
@@ -29,6 +35,10 @@ const JOGOS: Record<Jogavel, ComponentType<{ conversa: readonly string[] }>> = {
   nim: JogarNim,
   trilha: JogarTrilha,
   hex: JogarHex,
+  stop: JogarStop,
+  "jogo-da-onca": JogarOnca,
+  reversi: JogarReversi,
+  go: JogarGo,
 };
 
 type Props = { params: Promise<{ id: string }> };

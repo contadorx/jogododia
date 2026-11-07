@@ -1,0 +1,47 @@
+{
+  "id": "jogo-da-onca",
+  "nome": "Jogo da onça",
+  "status": "disponivel",
+  "ordem": 12,
+  "idade": 7,
+  "modo": "mesmo-ou-distancia",
+  "jogadores": 2,
+  "minutos": "10 a 20",
+  "treina": "Treina planejar com peças diferentes: a onça procura o pulo, e os cachorros trabalham juntos para cercar.",
+  "resumo": "Uma onça contra 14 cachorros. A onça captura pulando; os cachorros tentam cercá-la até ela não ter para onde ir.",
+  "precisa": [
+    "Um celular ou tablet com este jogo aberto: os dois jogam no mesmo",
+    "À distância: um aparelho para cada um, com internet. Um cria a sala e manda o código; o outro entra",
+    "Sem tela: o tabuleiro riscado no chão ou no papel, uma pedra grande para a onça e 14 pedrinhas ou feijões para os cachorros"
+  ],
+  "passos": [
+    "O tabuleiro é uma grade de 5 por 5 pontos, com diagonais, e um triângulo em cima: a toca da onça.",
+    "A onça começa no centro e os 14 cachorros, nas fileiras de baixo. A onça joga primeiro.",
+    "Na sua vez, ande uma peça para um ponto vizinho livre, seguindo as linhas.",
+    "A onça captura pulando um cachorro vizinho, em linha reta, para o ponto livre logo depois dele. Pode emendar outros pulos, se quiser. Os cachorros não capturam.",
+    "A onça ganha se capturar 5 cachorros. Os cachorros ganham se cercarem a onça até ela não ter nenhum movimento. 80 jogadas seguidas sem captura é empate.",
+    "Troquem de lado a cada partida. À distância, o site sorteia quem é a onça e troca na revanche."
+  ],
+  "combinados": [
+    "No texto do museu da UFPR, os cachorros não entram na toca. Aqui eles podem, para dar para encurralar a onça lá dentro. No tabuleiro de casa, combinem qual regra usar.",
+    "Cachorro sozinho é capturado fácil: andem em grupo."
+  ],
+  "conversa": [
+    "O que foi mais difícil: ser a onça ou os cachorros? Por quê?",
+    "Teve algum cachorro que ficou sozinho e foi capturado? O que dava para ter feito?",
+    "Este jogo é jogado por povos indígenas do Brasil. Que outros jogos e brincadeiras indígenas vocês conhecem?"
+  ],
+  "base": "Jogo de tabuleiro dos povos Bororo (Mato Grosso) e Manchineri (Acre). O Museu de Arqueologia e Etnologia da UFPR o indica para aulas sobre diversidade cultural.",
+  "evidencia": "B",
+  "fontes": [
+    {
+      "titulo": "Caixa didática Brinquedos Populares, texto de apoio ao professor (Museu de Arqueologia e Etnologia da UFPR)",
+      "url": "https://mae.ufpr.br/downloads/Caixa_Brinquedos_Texto_de_Apoio.pdf"
+    },
+    {
+      "titulo": "Regras do jogo da onça, na ludoteca da SP Leituras",
+      "url": "https://ludoteca.spleituras.org.br/arquivos/jogos-261-regras-jogo-da-onca.pdf"
+    }
+  ],
+  "revisao": null
+}

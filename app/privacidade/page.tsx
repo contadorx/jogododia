@@ -25,7 +25,8 @@ export default function Pagina() {
           <li>As partidas e o aceite dos Termos ficam guardados só no seu aparelho.</li>
           {distancia ? (
             <li>
-              Na partida à distância, só as jogadas (coordenadas e respostas) passam por um servidor em São Paulo, e não ficam guardadas lá.
+              Na partida à distância, só as jogadas (lances, coordenadas, palpites, respostas e as palavras do Stop) passam por um servidor em
+              São Paulo, e não ficam guardadas lá.
             </li>
           ) : null}
           <li>
@@ -50,12 +51,14 @@ export default function Pagina() {
       <Clausula n="2" titulo="O que fica só no seu aparelho">
         <p>
           Para funcionar sem cadastro, o site guarda no armazenamento do navegador (localStorage), no próprio aparelho: o aceite dos Termos (versão
-          e data), a partida frente a frente em andamento (posição dos navios, tiros e a cor escolhida)
-          {distancia ? ", as salas à distância em andamento (código da sala, a sua frota e os tiros) e o último modo de jogo escolhido" : ""}.
+          e data), as partidas em andamento (na batalha naval frente a frente, a posição dos navios, os tiros e a cor escolhida; nos outros
+          jogos, os lances), o código secreto e o rascunho do descubra o código
+          {distancia ? ", as salas à distância em andamento (código da sala e os lances; na batalha naval, também a sua frota) e o último modo de jogo escolhido" : ""}.
         </p>
         <p>
-          Nós não temos acesso a essas informações. No modo frente a frente, cada jogador usa o seu aparelho e as coordenadas são faladas em voz
-          alta: não existe conexão entre os aparelhos. Para apagar tudo, use o botão Apagar meus dados deste aparelho, na{" "}
+          Nós não temos acesso a essas informações. Na batalha naval frente a frente, cada jogador usa o seu aparelho e as coordenadas são
+          faladas em voz alta; nos jogos no mesmo aparelho, os dois jogam no mesmo celular ou tablet. Nos dois casos não existe conexão entre
+          aparelhos. Para apagar tudo, use o botão Apagar meus dados deste aparelho, na{" "}
           <Link href="/sobre/">página Sobre</Link>, ou limpe os dados do site nas configurações do navegador.
         </p>
       </Clausula>
@@ -65,7 +68,9 @@ export default function Pagina() {
           <p>
             <strong>Partidas à distância.</strong> Quando vocês jogam à distância, o site liga os dois aparelhos por meio do Supabase, com servidor
             em São Paulo. Passam por ele o código da sala, um número sorteado para cada aparelho (que não identifica ninguém) e as jogadas:
-            coordenadas e respostas. Não há nome, chat nem cadastro. As jogadas não ficam guardadas: o servidor só repassa cada uma para o outro
+            lances, coordenadas, palpites e respostas. No descubra o código, o código secreto de cada um só é enviado no fim da partida, para o
+            outro ver. No Stop, vão as palavras que cada um digitou em cada categoria (até 40 letras cada), no fim de cada rodada. Não há nome,
+            chat nem cadastro. As jogadas não ficam guardadas: o servidor só repassa cada uma para o outro
             aparelho da sala. Como em qualquer conexão pela internet, o servidor vê o endereço IP do aparelho durante a partida e o provedor pode
             manter registros técnicos de conexão por pouco tempo. Antes de abrir uma sala, o site também pergunta a esse servidor se o modo à
             distância está no ar. Base legal: execução do serviço que você pediu e legítimo interesse (art. 7º, V e IX, da LGPD).

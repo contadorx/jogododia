@@ -1,0 +1,44 @@
+{
+  "id": "go",
+  "nome": "Go",
+  "status": "disponivel",
+  "ordem": 14,
+  "idade": 8,
+  "modo": "mesmo-ou-distancia",
+  "jogadores": 2,
+  "minutos": "15 a 30",
+  "treina": "Treina enxergar o tabuleiro inteiro, cercar e defender espaço e pensar em mais de um lugar ao mesmo tempo.",
+  "resumo": "Cada um põe pedras nos cruzamentos para cercar espaço e capturar as pedras do outro. Ganha quem tiver mais área no fim.",
+  "precisa": [
+    "Um celular ou tablet com este jogo aberto: os dois jogam no mesmo",
+    "À distância: um aparelho para cada um, com internet. Um cria a sala e manda o código; o outro entra",
+    "Sem tela: uma grade de 9 por 9 linhas desenhada no papel e 40 grãos de cada cor (feijão e milho, por exemplo)"
+  ],
+  "passos": [
+    "As pretas começam. Na sua vez, ponha uma pedra num cruzamento livre. As pedras não andam.",
+    "Pedras da mesma cor encostadas formam um grupo. Os cruzamentos livres em volta dele são as liberdades.",
+    "O grupo que fica sem nenhuma liberdade é capturado e sai do tabuleiro. No site, a bolinha vermelha avisa que um grupo tem só uma liberdade.",
+    "Não vale jogar onde a sua pedra ficaria sem liberdade (a não ser que ela capture), nem repetir uma posição que já apareceu.",
+    "Quando os dois passam a vez seguido, a partida acaba. Antes de passar, capturem as pedras do outro que estão cercadas.",
+    "Cada um conta as suas pedras mais os cruzamentos vazios cercados só por ele. As brancas ganham 7,5 de compensação, porque as pretas começam.",
+    "À distância é igual: o site sorteia quem começa e alterna nas revanches."
+  ],
+  "combinados": [
+    "Para começar, joguem o Go de captura: ganha quem capturar a primeira pedra. Depois, partam para a partida completa.",
+    "No tabuleiro de casa, quem está aprendendo pode começar com 2 ou 3 pedras já postas."
+  ],
+  "conversa": [
+    "Teve algum grupo seu que ficou sem saída? O que dava para fazer antes?",
+    "Onde é mais fácil cercar espaço: no canto, na borda ou no meio? Por quê?",
+    "Em algum momento você deixou de defender um lado para atacar o outro? Valeu a pena?"
+  ],
+  "base": "Jogo de tabuleiro criado na China há mais de 2 mil anos. Um estudo pequeno com crianças de 7 a 12 anos na Coreia (2014) usou o Go por 16 semanas; aqui ele vale pelo jogo.",
+  "evidencia": "A",
+  "fontes": [
+    {
+      "titulo": "Baduk (the Game of Go) Improved Cognitive Function and Brain Activity in Children with ADHD, de Kim e colegas (Psychiatry Investigation, 2014)",
+      "url": "https://pmc.ncbi.nlm.nih.gov/articles/PMC4023088/"
+    }
+  ],
+  "revisao": null
+}

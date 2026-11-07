@@ -5,7 +5,7 @@ import { reproduzir } from "../lib/jogos/motor.ts";
 import { casaQ, motorQuatro } from "../lib/jogos/quatro.ts";
 import { HORIZONTAIS, LADO_P, TOTAL_LINHAS, ladosDoQuadrado, linhaH, linhaV, motorPontinhos, quadradosDaLinha } from "../lib/jogos/pontinhos.ts";
 import { CASAS, alimenta, casasJogaveis, motorMancala } from "../lib/jogos/mancala.ts";
-import { semente, simularSala } from "./testar-turnos.mjs";
+import { semente, simularSala } from "./apoio-testes.mjs";
 
 const sorteio = (lista, sorte) => lista[Math.floor(sorte() * lista.length)];
 

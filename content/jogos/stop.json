@@ -1,0 +1,44 @@
+{
+  "id": "stop",
+  "nome": "Stop (adedonha)",
+  "status": "disponivel",
+  "ordem": 11,
+  "idade": 7,
+  "modo": "mesmo-ou-distancia",
+  "jogadores": 2,
+  "minutos": "10 a 20",
+  "treina": "Treina lembrar palavras, escrever com atenção à ortografia e separar as coisas por categoria.",
+  "resumo": "Sorteia-se uma letra e cada um escreve, em cada categoria, uma palavra que comece com ela. Quem completar tudo primeiro pede Stop!",
+  "precisa": [
+    "No mesmo aparelho: um celular ou tablet com este jogo aberto, e papel e lápis para cada um",
+    "À distância: um aparelho para cada um, com internet. Um cria a sala e manda o código; o outro entra. Cada um digita as palavras no próprio celular",
+    "Sem tela: papel, lápis e alguém para sortear a letra (dá para jogar com mais de dois)"
+  ],
+  "passos": [
+    "Escolham as categorias (nome de gente, animal, comida, objeto…), quantas rodadas e o tempo de cada uma.",
+    "O site sorteia uma letra. Cada um escreve, em cada categoria, uma palavra que comece com ela.",
+    "Quem preencher todas as categorias pede Stop! A rodada acaba para os dois, mesmo que o tempo não tenha terminado.",
+    "Hora de conferir: palavra que vale e é diferente da do outro ganha 10 pontos; igual à do outro, 5; em branco ou que não vale, 0.",
+    "Em dúvida se uma palavra vale? Conversem. No mesmo aparelho, o adulto dá a palavra final. À distância, cada um pode marcar \"não vale\" nas palavras do outro.",
+    "Ganha quem somar mais pontos no fim das rodadas."
+  ],
+  "combinados": [
+    "Combinem antes se nome de marca e palavra em outra língua valem.",
+    "Palavra escrita com erro: combinem se vale e, no fim da rodada, escrevam juntos do jeito certo.",
+    "À distância, as palavras aparecem para o outro jogador: combinem com a criança que os campos são só para palavras do jogo."
+  ],
+  "conversa": [
+    "Qual foi a letra mais difícil? Por quê?",
+    "Teve alguma palavra que só você pensou? De onde veio a ideia?",
+    "Em que categoria foi mais fácil achar palavras? E mais difícil?"
+  ],
+  "base": "Jogo tradicional de papel e lápis, também chamado de adedonha. Um estudo com uma turma de 5º ano (2022) usou o jogo para trabalhar ortografia e vocabulário.",
+  "evidencia": "A",
+  "fontes": [
+    {
+      "titulo": "O uso do jogo Adedonha como ferramenta de auxílio à aprendizagem, Revista Educação em Foco nº 14 (2022)",
+      "url": "https://portal.unisepe.com.br/unifia/wp-content/uploads/sites/10001/2022/09/O-USO-DO-JOGO-ADEDONHA-COMO-FERRAMENTA-DE-AUX%C3%8DLIO-%C3%80-APRENDIZAGEM-P%C3%A1g-150-a-161.pdf"
+    }
+  ],
+  "revisao": null
+}

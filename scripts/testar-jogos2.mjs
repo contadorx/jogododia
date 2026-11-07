@@ -6,7 +6,7 @@ import { N_HEX, TOTAL_HEX, motorHex, vizinhasHex } from "../lib/jogos/hex.ts";
 import { MOINHOS, VIZINHOS, jogadasTrilha, motorTrilha, removiveis } from "../lib/jogos/trilha.ts";
 import { escura, lancesDamas, motorDamas } from "../lib/jogos/damas.ts";
 import { PALPITES, comparar, motorCodigo } from "../lib/jogos/codigo.ts";
-import { semente, simularSala } from "./testar-turnos.mjs";
+import { semente, simularSala } from "./apoio-testes.mjs";
 
 const sorteio = (lista, sorte) => lista[Math.floor(sorte() * lista.length)];
 

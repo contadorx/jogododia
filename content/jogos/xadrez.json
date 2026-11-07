@@ -1,10 +1,52 @@
 {
   "id": "xadrez",
   "nome": "Xadrez",
-  "status": "em-breve",
+  "status": "disponivel",
   "ordem": 2,
   "idade": 7,
-  "modo": "mesmo-aparelho",
+  "modo": "mesmo-ou-distancia",
+  "jogadores": 2,
+  "minutos": "15 a 40",
   "treina": "Treina planejar jogadas e prever a resposta do outro antes de mexer a peça.",
-  "resumo": "Cada peça anda de um jeito, e o objetivo é dar xeque-mate no rei do outro."
+  "resumo": "Cada peça anda de um jeito, e o objetivo é dar xeque-mate no rei do outro.",
+  "precisa": [
+    "Um celular ou tablet com este jogo aberto: os dois jogam no mesmo",
+    "À distância: um aparelho para cada um, com internet. Um cria a sala e manda o código; o outro entra",
+    "Sem tela: um tabuleiro de xadrez de casa"
+  ],
+  "passos": [
+    "As brancas começam. Toque numa peça sua: o jogo marca as casas para onde ela pode ir.",
+    "O peão anda para a frente e captura na diagonal. A torre anda em linha reta, o bispo na diagonal e a dama nas duas. O cavalo anda em L e pula as outras peças. O rei anda uma casa.",
+    "Xeque é quando o rei está ameaçado: o lance seguinte tem que tirá-lo do perigo.",
+    "Ganha quem der xeque-mate: o rei do outro em xeque, sem nenhum lance para escapar.",
+    "Lances especiais que o jogo já conhece: roque, en passant e a promoção do peão que chega ao fim do tabuleiro.",
+    "É empate quem não está em xeque ficar sem lance (afogamento), a mesma posição aparecer três vezes ou não sobrarem peças para dar mate.",
+    "À distância é igual: o site sorteia quem fica com as brancas e alterna nas revanches."
+  ],
+  "combinados": [
+    "Na primeira partida, o adulto pode jogar sem a dama, para equilibrar.",
+    "Antes de mexer, perguntem em voz alta: o que o outro ameaça?"
+  ],
+  "conversa": [
+    "Qual peça você achou mais difícil de usar? Por quê?",
+    "Teve algum lance em que você viu a ameaça do outro antes de ela acontecer?",
+    "Se você pudesse voltar um lance da partida, qual seria? O que faria no lugar?"
+  ],
+  "base": "Jogo tradicional, usado em aulas de educação física. Estudos com crianças (Sala e Gobet, 2016 e 2017) não mostram ganho em matemática maior que o de outros jogos: aqui ele vale pelo jogo.",
+  "evidencia": "A",
+  "fontes": [
+    {
+      "titulo": "O xadrez na educação física, trabalho de especialização com uma turma de 6º ano (UFMG, 2012)",
+      "url": "https://repositorio.ufmg.br/bitstream/1843/56217/1/XadrezEduca%c3%a7%c3%a3o%20F%c3%adsica28.pdf"
+    },
+    {
+      "titulo": "Do the benefits of chess instruction transfer to academic and cognitive skills? A meta-analysis, de Sala e Gobet (Educational Research Review, 2016)",
+      "url": "https://researchonline.lse.ac.uk/id/eprint/102237"
+    },
+    {
+      "titulo": "Does chess instruction improve mathematical problem-solving ability? Two experimental studies with an active control group, de Sala e Gobet (2017)",
+      "url": "https://pmc.ncbi.nlm.nih.gov/articles/PMC5709436"
+    }
+  ],
+  "revisao": null
 }

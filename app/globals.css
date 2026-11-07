@@ -184,3 +184,13 @@ button:not(:disabled),
     box-shadow: 0 0 0 0 transparent;
   }
 }
+
+/* Reversi: a peça que acabou de virar. */
+.vira {
+  animation: vira 0.35s ease-out;
+}
+@keyframes vira {
+  from {
+    transform: scaleX(0.1);
+  }
+}

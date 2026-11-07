@@ -11,8 +11,11 @@ se linkam.
   primeira partida em cada aparelho.
 - **Educativo, com fonte:** cada jogo diz o que treina ("Treina…") e de onde veio a ideia, com a mesma
   régua do Brincadeira do Dia (evidência A a D, fontes e revisão voluntária).
-- **Batalha naval em dois modos:** frente a frente (cada um no seu celular, falando as coordenadas, sem
-  conexão nenhuma) ou à distância (cada um na sua casa, numa sala com código, pelo Supabase).
+- **14 jogos, todos jogáveis no site:** batalha naval, xadrez, mancala (awalé), quatro em linha,
+  descubra o código, damas (regra brasileira), pontinhos, Nim, trilha, hex, Stop (adedonha), jogo da
+  onça, reversi e Go.
+- **Dois modos em todos:** no mesmo aparelho (ou, na batalha naval, frente a frente com dois celulares,
+  falando as coordenadas) e à distância (cada um na sua casa, numa sala com código, pelo Supabase).
 - **Sem login, sem chat e sem guardar nada em servidor:** o aceite e as partidas ficam no aparelho.
 - **Funciona sem internet** (o modo frente a frente) depois da primeira visita, e pode ser instalado como app.
 - **Jogo de hoje:** os jogos disponíveis se revezam, um por dia, na página inicial.
@@ -25,6 +28,8 @@ se linkam.
 | Estilo | Tailwind CSS 4, fontes Atkinson Hyperlegible e Bricolage Grotesque (as mesmas do irmão) |
 | Conteúdo | Um JSON por jogo em `content/jogos/`, conferido com Zod no build |
 | Regras da batalha naval | `lib/batalha.ts` (tabuleiro) e `lib/protocolo.ts` (partida à distância), funções puras com testes |
+| Regras dos outros jogos | `lib/jogos/<jogo>.ts`, uma por jogo, no mesmo formato (`lib/jogos/motor.ts`); xadrez com `chess.js` (BSD) |
+| Partida por turnos | `lib/jogos/turnos.ts`: a mesma lista de lances nos dois aparelhos, com reenvio do que se perder |
 | Partida à distância | Supabase Realtime, plano gratuito, servidor em São Paulo (`lib/sala.ts`) |
 | Dados no aparelho | `localStorage` (`lib/armazenamento.ts`) |
 | Offline | `scripts/gerar-sw.mjs` gera `out/sw.js` depois do build |
@@ -35,7 +40,7 @@ se linkam.
 ```bash
 npm install
 npm run dev          # http://localhost:3000 (sem service worker)
-npm test             # regras do tabuleiro e partidas simuladas à distância, com mensagens perdidas
+npm test             # regras de todos os jogos e partidas simuladas à distância, com mensagens perdidas
 npm run build        # gera out/ e out/sw.js
 npm run preview      # serve out/ em http://localhost:4173, igual ao site publicado
 ```
@@ -78,7 +83,8 @@ Mude `nome` em `config/site.ts`, o `name` e o `short_name` em `public/manifest.w
 Um arquivo por jogo. O nome do arquivo é igual ao `id`.
 
 - **Todos:** `id`, `nome`, `status` (`disponivel` ou `em-breve`), `ordem` (posição no catálogo, sem
-  repetir), `idade` (a partir de), `modo` (`cada-um-no-seu`, `mesmo-aparelho` ou `papel`), `treina`
+  repetir), `idade` (a partir de), `modo` (`cada-um-no-seu`, `mesmo-aparelho`, `mesmo-ou-distancia` ou
+  `papel`), `treina`
   (começa sempre com "Treina", até 160 letras; nada de "melhora" ou "desenvolve") e `resumo`.
 - **Só os disponíveis:** `jogadores`, `minutos` ("15 a 25"), `precisa`, `passos`, `combinados`,
   `conversa` (perguntas para depois do jogo), `base` (de onde veio a ideia, até 200 letras: inspiração,
@@ -90,6 +96,15 @@ Um arquivo por jogo. O nome do arquivo é igual ao `id`.
 Um jogo `disponivel` ganha ficha em `/jogos/<id>/`. Para ter também a versão de jogar no site
 (`/jogos/<id>/jogar/`), acrescente o `id` em `lib/jogaveis.ts` e o componente em
 `app/jogos/[id]/jogar/page.tsx`. Sem isso, a ficha serve para jogar no papel ou no tabuleiro de casa.
+
+### Novo jogo por turnos
+
+1. Escreva as regras em `lib/jogos/<jogo>.ts` seguindo o contrato `Motor` de `lib/jogos/motor.ts`:
+   estado inicial, de quem é a vez, se a jogada vale, aplicar a jogada, resultado e a conferência do
+   que chega pela rede. Só funções puras, sem tela.
+2. Teste em `scripts/testar-*.mjs` (há partidas sorteadas e a sala simulada em `scripts/apoio-testes.mjs`).
+3. Desenhe o tabuleiro em `components/jogos/<Jogo>.tsx` e passe tudo para `JogoPorTurnos`. Os dois
+   modos, o desfazer, a sala, o convite, a revanche e as perguntas do fim vêm prontos.
 
 Os critérios de escolha e a ordem sugerida dos próximos jogos estão em `docs/jogos.md`.
 
@@ -127,10 +142,11 @@ npm i --no-save playwright && npx playwright install chromium && npm run og   # 
 
 ```
 app/                  páginas (início, jogos/[id], jogos/[id]/jogar, sobre, termos, privacidade, sitemap, robots)
-components/           telas e partes reutilizáveis; batalha/ tem o jogo nos dois modos
+components/           telas e partes reutilizáveis; batalha/ tem a batalha naval; jogos/ tem os outros 13
+                      (o Stop tem tela própria) e a tela comum dos jogos por turnos (JogoPorTurnos.tsx)
 content/jogos/        um jogo por arquivo JSON
 config/site.ts        nome, contato, site irmão, tempo real, métricas
-lib/                  esquema do conteúdo, regras (batalha.ts, protocolo.ts), sala.ts, armazenamento, marca
+lib/                  esquema do conteúdo, regras (batalha.ts, protocolo.ts, jogos/), sala.ts, armazenamento, marca
 public/               manifesto, ícones do app e og.png
 scripts/              testes, gerar-sw.mjs, relay-de-teste.mjs, gerar-icones.mjs, gerar-og.mjs
 docs/                 jogos.md (curadoria) e tempo-real.md (partida à distância)

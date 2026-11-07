@@ -5,6 +5,7 @@
  */
 export const JOGAVEIS = [
   "batalha-naval",
+  "xadrez",
   "mancala",
   "quatro-em-linha",
   "descubra-o-codigo",
@@ -13,6 +14,10 @@ export const JOGAVEIS = [
   "nim",
   "trilha",
   "hex",
+  "stop",
+  "jogo-da-onca",
+  "reversi",
+  "go",
 ] as const;
 
 export type Jogavel = (typeof JOGAVEIS)[number];

@@ -1,0 +1,43 @@
+{
+  "id": "reversi",
+  "nome": "Reversi",
+  "status": "disponivel",
+  "ordem": 13,
+  "idade": 7,
+  "modo": "mesmo-ou-distancia",
+  "jogadores": 2,
+  "minutos": "10 a 20",
+  "treina": "Treina pensar algumas jogadas à frente e perceber que a vantagem pode mudar de lado de uma vez.",
+  "resumo": "Cada peça nova prende as do outro em linha reta, e as presas viram de cor. No fim, ganha quem tiver mais peças.",
+  "precisa": [
+    "Um celular ou tablet com este jogo aberto: os dois jogam no mesmo",
+    "À distância: um aparelho para cada um, com internet. Um cria a sala e manda o código; o outro entra",
+    "Sem tela: um tabuleiro de 8 por 8 e 64 fichas com um lado de cada cor (dá para pintar tampinhas)"
+  ],
+  "passos": [
+    "O jogo começa com 4 peças no meio, duas de cada cor, cruzadas. As pretas começam.",
+    "Na sua vez, ponha uma peça de modo que uma ou mais peças do outro fiquem presas, em linha reta, entre a peça nova e outra sua: deitada, em pé ou na diagonal.",
+    "Todas as peças presas viram para a sua cor. No site, os pontinhos mostram onde dá para jogar.",
+    "Quem não tem jogada passa a vez (o site passa sozinho).",
+    "Quando ninguém mais pode jogar, ganha quem tiver mais peças da sua cor.",
+    "À distância é igual: o site sorteia quem começa e alterna nas revanches."
+  ],
+  "combinados": [
+    "Antes de jogar, digam em voz alta: se eu jogar aqui, então…",
+    "Ter muitas peças no meio da partida não garante nada. Vale conversar sobre isso no fim."
+  ],
+  "conversa": [
+    "Teve alguma jogada que virou muitas peças, mas depois deu ao outro uma jogada melhor ainda?",
+    "Por que as peças dos cantos valem tanto?",
+    "Complete a frase: se eu jogar aqui, então o outro vai…"
+  ],
+  "base": "Jogo de tabuleiro do fim do século 19, também vendido com outro nome. Um estudo numa turma de 5º ano na Dinamarca (2023) usou o jogo para treinar o raciocínio do tipo se… então.",
+  "evidencia": "A",
+  "fontes": [
+    {
+      "titulo": "Enhancing Mathematical Reasoning in Primary School with the Strategic Board Game Othello (European Conference on Games Based Learning, 2023)",
+      "url": "https://papers.academic-conferences.org/index.php/ecgbl/article/view/1524"
+    }
+  ],
+  "revisao": null
+}
