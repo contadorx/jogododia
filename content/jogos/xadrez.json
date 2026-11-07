@@ -1,0 +1,10 @@
+{
+  "id": "xadrez",
+  "nome": "Xadrez",
+  "status": "em-breve",
+  "ordem": 2,
+  "idade": 7,
+  "modo": "mesmo-aparelho",
+  "treina": "Treina planejar jogadas e prever a resposta do outro antes de mexer a peça.",
+  "resumo": "Cada peça anda de um jeito, e o objetivo é dar xeque-mate no rei do outro."
+}

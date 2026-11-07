@@ -1,0 +1,10 @@
+{
+  "id": "descubra-o-codigo",
+  "nome": "Descubra o código",
+  "status": "em-breve",
+  "ordem": 5,
+  "idade": 8,
+  "modo": "cada-um-no-seu",
+  "treina": "Treina deduzir a partir de pistas e descartar possibilidades.",
+  "resumo": "Um inventa um código de 4 algarismos diferentes; o outro chuta, e as pistas dizem quantos estão no lugar certo e quantos estão fora do lugar."
+}

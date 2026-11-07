@@ -1,0 +1,10 @@
+{
+  "id": "pontinhos",
+  "nome": "Pontinhos",
+  "status": "em-breve",
+  "ordem": 7,
+  "idade": 7,
+  "modo": "mesmo-aparelho",
+  "treina": "Treina contar e prever quem vai conseguir fechar cada quadrado.",
+  "resumo": "Na sua vez, ligue dois pontos vizinhos; quem fecha um quadrado marca ponto e joga de novo."
+}

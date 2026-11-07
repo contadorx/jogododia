@@ -1,0 +1,23 @@
+# Mantém acordado o projeto gratuito do Supabase usado na partida à distância: o plano gratuito pausa
+# o projeto depois de uma semana com pouco uso. Uma vez por dia, faz a mesma leitura que o site faz
+# antes de abrir uma sala (a tabela de status). A chave é a publicável, a mesma que já vai no site.
+#
+# Atenção: em repositório público, o GitHub desliga os agendamentos depois de 60 dias sem nenhum
+# commit. Ele avisa por e-mail; é só reativar em Actions. Dá para rodar na mão pelo botão "Run workflow".
+name: Manter o Supabase acordado
+
+on:
+  schedule:
+    - cron: "17 9 * * *" # todo dia, às 6h17 de Brasília
+  workflow_dispatch: {}
+
+jobs:
+  status:
+    runs-on: ubuntu-latest
+    timeout-minutes: 2
+    steps:
+      - name: Ler o status do modo à distância
+        run: |
+          curl --fail --silent --show-error \
+            "https://jmtnycyfwmjumrafbcfd.supabase.co/rest/v1/status?select=ok&id=eq.1" \
+            -H "apikey: sb_publishable_zK4SpRm1NzvdogGpVUQK-A_pmzz-vW0"

@@ -1,0 +1,10 @@
+{
+  "id": "hex",
+  "nome": "Hex",
+  "status": "em-breve",
+  "ordem": 10,
+  "idade": 9,
+  "modo": "mesmo-aparelho",
+  "treina": "Treina pensar em caminhos e bloqueios num tabuleiro de hexágonos.",
+  "resumo": "Cada um tenta ligar os seus dois lados do tabuleiro. Nunca termina empatado."
+}

@@ -1,0 +1,10 @@
+{
+  "id": "damas",
+  "nome": "Damas",
+  "status": "em-breve",
+  "ordem": 6,
+  "idade": 7,
+  "modo": "mesmo-aparelho",
+  "treina": "Treina antecipar jogadas e calcular trocas de peças.",
+  "resumo": "As peças andam na diagonal e capturam pulando a do outro; quem chega do outro lado vira dama."
+}

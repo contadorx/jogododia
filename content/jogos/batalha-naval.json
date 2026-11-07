@@ -1,0 +1,50 @@
+{
+  "id": "batalha-naval",
+  "nome": "Batalha naval",
+  "status": "disponivel",
+  "ordem": 1,
+  "idade": 8,
+  "modo": "cada-um-no-seu",
+  "jogadores": 2,
+  "minutos": "15 a 25",
+  "treina": "Treina localizar casas por letra e número, como no plano cartesiano, e deduzir onde está o navio a partir das pistas.",
+  "resumo": "Cada um esconde 5 navios num tabuleiro de 10 por 10 e tenta afundar os do outro dizendo coordenadas, como B5.",
+  "precisa": [
+    "Dois celulares (ou um celular e um tablet), um para cada jogador, com este jogo aberto",
+    "Frente a frente: nenhuma conexão entre eles, vocês falam as coordenadas em voz alta",
+    "À distância: internet nos dois aparelhos e o código da sala, que um manda para o outro",
+    "Prefere papel? Duas folhas quadriculadas e dois lápis servem do mesmo jeito"
+  ],
+  "passos": [
+    "Cada um monta a sua frota sem deixar o outro ver a tela: 5 navios, que não podem encostar um no outro, nem na diagonal.",
+    "Decidam no par ou ímpar quem começa.",
+    "Na sua vez, escolha uma casa e diga a coordenada em voz alta: primeiro a letra da coluna, depois o número da linha, como B5.",
+    "Quem recebe o tiro toca na mesma casa em Defender e fala o que o jogo mostrar: água, acertou ou afundou, com o nome do navio.",
+    "Quem atirou marca a resposta em Atacar. Quando um navio afunda, o jogo pinta de água as casas em volta dele, porque ali não pode ter outro.",
+    "Ganha quem afundar os 5 navios do outro primeiro.",
+    "À distância é igual, só que sem falar: um cria a sala e manda o código, o outro entra, e o jogo responde os tiros sozinho."
+  ],
+  "combinados": [
+    "Acertou, joga de novo? Combinem antes de começar.",
+    "A resposta é sempre a verdade: o jogo falado só funciona com os dois jogando limpo.",
+    "Durante a partida, o celular serve só para o jogo: notificação fica para depois."
+  ],
+  "conversa": [
+    "Depois de acertar um navio, como você decidiu onde atirar em seguida?",
+    "Teve alguma casa em que dava para ter certeza de que era água? Por quê?",
+    "Se o tabuleiro tivesse 20 por 20, quantas casas seriam? O jogo ficaria mais fácil ou mais difícil?"
+  ],
+  "base": "Jogo tradicional de papel e lápis. Nossa versão fala as coordenadas como letra e número e liga aos objetivos EF05MA14 e EF06MA16 da BNCC. Não foi testada em sala de aula.",
+  "evidencia": "D",
+  "fontes": [
+    {
+      "titulo": "BNCC, Matemática, 6º ano, habilidade EF06MA16 (MEC), na Nova Escola",
+      "url": "https://novaescola.org.br/planos-de-aula/habilidades/EF06MA16"
+    },
+    {
+      "titulo": "Plano de aula Jogando no plano cartesiano, 5º ano, habilidades EF05MA14 e EF05MA15 da BNCC, na Nova Escola",
+      "url": "https://novaescola.org.br/planos-de-aula/fundamental/5ano/matematica/jogando-no-plano-cartesiano/1303"
+    }
+  ],
+  "revisao": null
+}

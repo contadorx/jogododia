@@ -1,0 +1,10 @@
+{
+  "id": "trilha",
+  "nome": "Trilha",
+  "status": "em-breve",
+  "ordem": 9,
+  "idade": 8,
+  "modo": "mesmo-aparelho",
+  "treina": "Treina planejar em etapas e defender ao mesmo tempo.",
+  "resumo": "Quem forma uma linha de três peças tira uma do outro; perde quem ficar com só duas."
+}

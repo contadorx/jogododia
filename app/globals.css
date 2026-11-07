@@ -1,0 +1,160 @@
+@import "tailwindcss";
+
+/* Mesmo visual "bilhete na geladeira" do Brincadeira do Dia: fundo branco, tinta azul-marinho,
+   botões azuis, destaques amarelos como marca-texto. As cores do jogo ficam no fim. */
+@theme {
+  --color-tinta: #1c2333;
+  --color-suave: #5a6273;
+  --color-linha: #dce1ea;
+  --color-borda: #c9d0dc;
+  --color-painel: #f2f4f8;
+  --color-azul: #2f55c9;
+  --color-azul-escuro: #2346a8;
+  --color-azul-claro: #e8eefc;
+  --color-sol: #ffc845;
+  --color-sol-claro: #fff4d6;
+  --color-folha: #23804f;
+  --color-folha-claro: #e3f3ea;
+  --color-folha-escuro: #1f4d35;
+  --color-alerta: #7a2e0b;
+  --color-alerta-claro: #fff0e6;
+
+  /* Jogo */
+  --color-mar: #dbe5fa;
+  --color-mar-linha: #b7c6e8;
+  --color-fogo: #c8381f;
+  --color-fogo-claro: #fde7e2;
+
+  --font-display: "Bricolage Grotesque Variable", "Segoe UI", system-ui, sans-serif;
+  --font-sans: "Atkinson Hyperlegible", system-ui, -apple-system, "Segoe UI", sans-serif;
+}
+
+:root {
+  color-scheme: light;
+}
+
+@layer base {
+  a {
+    color: var(--color-azul);
+    text-underline-offset: 2px;
+  }
+  main p a,
+  main li a,
+  main dd a {
+    text-decoration: underline;
+  }
+}
+
+html,
+body {
+  background: #ffffff;
+  color: var(--color-tinta);
+  -webkit-tap-highlight-color: transparent;
+}
+
+body {
+  font-family: var(--font-sans);
+  font-size: 16px;
+  line-height: 1.45;
+}
+
+:focus-visible {
+  outline: 3px solid var(--color-azul);
+  outline-offset: 2px;
+}
+
+.texto-legal p,
+.texto-legal li {
+  margin: 0;
+}
+.texto-legal ul,
+.texto-legal ol {
+  margin: 0;
+  padding-left: 1.25rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+}
+.texto-legal ul {
+  list-style: disc;
+}
+.texto-legal ol {
+  list-style: lower-alpha;
+}
+
+.marca-texto {
+  background: linear-gradient(transparent 60%, var(--color-sol) 60%);
+}
+
+button:not(:disabled),
+[role="button"]:not([aria-disabled="true"]) {
+  cursor: pointer;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation: none !important;
+    transition: none !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+@media print {
+  .nao-imprimir {
+    display: none !important;
+  }
+}
+
+/* Tabuleiro: 11 colunas (a primeira é a dos números) e 11 linhas (a primeira é a das letras).
+   As casas são quadradas e encolhem junto com a tela. */
+.tabuleiro {
+  display: grid;
+  grid-template-columns: repeat(11, minmax(0, 1fr));
+  gap: 2px;
+  user-select: none;
+  -webkit-user-select: none;
+  touch-action: manipulation;
+}
+.tabuleiro .rotulo {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  aspect-ratio: 1;
+  font-size: clamp(10px, 2.8vw, 13px);
+  font-weight: 700;
+  color: var(--color-suave);
+}
+.tabuleiro .casa {
+  position: relative;
+  aspect-ratio: 1;
+  border-radius: 4px;
+  background: var(--color-mar);
+  border: 0;
+  padding: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.tabuleiro .casa:disabled {
+  cursor: default;
+}
+.tabuleiro .casa.escolhida {
+  outline: 3px solid var(--color-tinta);
+  outline-offset: 1px;
+  z-index: 1;
+}
+
+/* A resposta que aparece grande, para ser lida em voz alta. */
+@media (prefers-reduced-motion: no-preference) {
+  .aparece {
+    animation: aparece 0.18s ease-out;
+  }
+}
+@keyframes aparece {
+  from {
+    transform: translateY(8px);
+    opacity: 0;
+  }
+}

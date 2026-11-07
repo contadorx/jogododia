@@ -1,0 +1,35 @@
+{
+  "name": "jogo-do-dia",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Site gratuito de jogos clássicos e educativos para pais jogarem junto com filhos de 7 a 12 anos. Irmão do Brincadeira do Dia.",
+  "scripts": {
+    "dev": "next dev",
+    "build": "next build && node scripts/gerar-sw.mjs",
+    "preview": "npx --yes serve@14 out -l 4173",
+    "test": "node --experimental-strip-types --disable-warning=ExperimentalWarning --test scripts/testar-batalha.mjs scripts/testar-distancia.mjs",
+    "icones": "node --experimental-strip-types --disable-warning=ExperimentalWarning scripts/gerar-icones.mjs",
+    "og": "node --experimental-strip-types --disable-warning=ExperimentalWarning scripts/gerar-og.mjs",
+    "typecheck": "tsc --noEmit"
+  },
+  "dependencies": {
+    "@fontsource-variable/bricolage-grotesque": "5.3.0",
+    "@fontsource/atkinson-hyperlegible": "5.3.0",
+    "@supabase/supabase-js": "2.119.0",
+    "next": "16.3.8",
+    "react": "19.3.0",
+    "react-dom": "19.3.0",
+    "zod": "4.6.5"
+  },
+  "devDependencies": {
+    "@tailwindcss/postcss": "4.3.3",
+    "@types/node": "22.19.0",
+    "@types/react": "19.3.0",
+    "@types/react-dom": "19.3.0",
+    "tailwindcss": "4.3.3",
+    "typescript": "5.9.3"
+  },
+  "engines": {
+    "node": ">=22.6"
+  }
+}

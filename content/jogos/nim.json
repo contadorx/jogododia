@@ -1,0 +1,10 @@
+{
+  "id": "nim",
+  "nome": "Nim, o jogo dos palitos",
+  "status": "em-breve",
+  "ordem": 8,
+  "idade": 9,
+  "modo": "mesmo-aparelho",
+  "treina": "Treina procurar o padrão matemático que garante a vitória.",
+  "resumo": "Fileiras de palitos: na sua vez, tire quantos quiser de uma fileira só. Quem tirar o último ganha."
+}
