@@ -165,7 +165,7 @@ function EscolherConfig({ config, aoMudar }: { config: Config; aoMudar: (c: Conf
   return (
     <div className="flex flex-col gap-4">
       <fieldset className="m-0 flex flex-col gap-2 border-0 p-0">
-        <legend className="mb-2 text-[15px] font-bold">Categorias (de 3 a 10)</legend>
+        <legend className="mb-2 text-[15px] font-bold">Categorias (de 3 a {CATEGORIAS_STOP.length})</legend>
         <div className="flex flex-wrap gap-2">
           {CATEGORIAS_STOP.map((c) => {
             const marcada = config.categorias.includes(c.id);

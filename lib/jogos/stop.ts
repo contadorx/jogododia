@@ -36,6 +36,8 @@ export const CATEGORIAS_STOP = [
   { id: "cor", nome: "Cor" },
   { id: "corpo", nome: "Parte do corpo" },
   { id: "brinquedo", nome: "Brinquedo ou jogo" },
+  { id: "carro", nome: "Carro (marca ou modelo)" },
+  { id: "adjetivo", nome: "Adjetivo (como algo ou alguém é)" },
 ] as const;
 
 export type IdCategoria = (typeof CATEGORIAS_STOP)[number]["id"];
@@ -559,6 +561,10 @@ export function placarStop(p: PartidaStop) {
 
 // ------------------------------------------------------------------------------- mensagens
 
+/** Uma rodada com todas as categorias e nenhuma palavra repetida. */
+const MAX_PONTOS_RODADA = 10 * CATEGORIAS_STOP.length;
+/** Um "não vale" para cada palavra de cada um dos outros, em todas as categorias. */
+const MAX_VOTOS = CATEGORIAS_STOP.length * (MAX_JOGADORES - 1);
 const inteiro = (n: unknown, min: number, max: number): n is number => Number.isInteger(n) && (n as number) >= min && (n as number) <= max;
 const texto = (s: unknown, max: number): s is string => typeof s === "string" && s.length <= max;
 
@@ -578,7 +584,7 @@ export function ehMsgStop(x: unknown): x is MsgStop {
       const quem = x.quem;
       if (!Array.isArray(quem) || quem.length < 1 || quem.length > MAX_JOGADORES || new Set(quem).size !== quem.length) return false;
       if (!quem.every((i) => inteiro(i, 0, elenco.length - 1))) return false;
-      return x.pontos === null || (Array.isArray(x.pontos) && x.pontos.length === quem.length && x.pontos.every((n) => inteiro(n, 0, 100)));
+      return x.pontos === null || (Array.isArray(x.pontos) && x.pontos.length === quem.length && x.pontos.every((n) => inteiro(n, 0, MAX_PONTOS_RODADA)));
     });
   }
   if (m.t === "eu") {
@@ -589,7 +595,7 @@ export function ehMsgStop(x: unknown): x is MsgStop {
         !Array.isArray(m.respostas) &&
         Object.entries(m.respostas as object).every(([k, v]) => ehCategoria(k) && texto(v, 40)));
     const anuladas = m.anuladas;
-    return respostasOk && Array.isArray(anuladas) && anuladas.length <= 60 && anuladas.every((s) => texto(s, 52) && ehCategoria(String(s).split(":")[0]));
+    return respostasOk && Array.isArray(anuladas) && anuladas.length <= MAX_VOTOS && anuladas.every((s) => texto(s, 52) && ehCategoria(String(s).split(":")[0]));
   }
   return false;
 }

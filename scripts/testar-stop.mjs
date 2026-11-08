@@ -3,6 +3,7 @@
 import { test } from "node:test";
 import assert from "node:assert/strict";
 import {
+  CATEGORIAS_STOP,
   CONFIG_PADRAO,
   LETRAS_STOP,
   MAX_ELENCO,
@@ -12,6 +13,7 @@ import {
   atual,
   comecar,
   conferirCategoria,
+  configValida,
   ehMsgStop,
   faseDe,
   ficarPronto,
@@ -419,4 +421,21 @@ test("Stop: mensagem estranha é recusada", () => {
   assert.equal(ehMsgStop({ ...sala, rodadas: [{ letra: "K", quem: [0, 1], pontos: null }] }), false, "letra fora da lista");
   assert.equal(ehMsgStop({ ...sala, rodadas: [{ letra: "B", quem: [0, 1], pontos: [10] }] }), false, "pontos sem dono");
   assert.equal(ehMsgStop({ ...sala, elenco: ["A", "A"] }), false);
+});
+
+test("Stop: todas as categorias, com carro e adjetivo", () => {
+  const todas = { categorias: CATEGORIAS_STOP.map((c) => c.id), total: 3, tempo: 60 };
+  assert.ok(todas.categorias.includes("carro") && todas.categorias.includes("adjetivo"));
+  assert.equal(configValida(todas), true);
+  assert.equal(configValida({ ...todas, categorias: [...todas.categorias, "carro"] }), false, "categoria repetida");
+  // uma rodada com todas as categorias e nada repetido passa de 100 pontos: a mensagem da sala tem que aceitar
+  const sala = { t: "sala", p: 1, elenco: ["A", "B"], config: todas, rodadas: [{ letra: "B", quem: [0, 1], pontos: [10 * todas.categorias.length, 0] }], fim: false };
+  assert.equal(ehMsgStop(sala), true);
+  assert.equal(ehMsgStop({ ...sala, rodadas: [{ letra: "B", quem: [0, 1], pontos: [10 * todas.categorias.length + 1, 0] }] }), false);
+  const votos = todas.categorias.flatMap((c) => Array.from({ length: MAX_JOGADORES - 1 }, (_, k) => `${c}:palavra${k}`));
+  assert.equal(ehMsgStop({ t: "eu", p: 1, r: 1, respostas: { carro: "Fusca", adjetivo: "Feliz" }, anuladas: votos, pronto: false, parou: false, tenho: 0 }), true);
+  // partidas inteiras com todas as categorias
+  for (const n of [2, 4, MAX_JOGADORES]) {
+    for (let seed = 1; seed <= 5; seed++) conferirIguais(simular({ seed, n, config: todas }).devs, `n=${n} semente ${seed}`);
+  }
 });

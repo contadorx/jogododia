@@ -15,7 +15,7 @@
     "Sem tela: papel, lápis e alguém para sortear a letra"
   ],
   "passos": [
-    "Escolham as categorias (nome de gente, animal, comida, objeto…), quantas rodadas e o tempo de cada uma.",
+    "Escolham as categorias (nome de gente, animal, comida, objeto, carro, adjetivo…), quantas rodadas e o tempo de cada uma.",
     "O site sorteia uma letra. Cada um escreve, em cada categoria, uma palavra que comece com ela.",
     "Quem preencher todas as categorias pede Stop! A rodada acaba para todos, mesmo que o tempo não tenha terminado.",
     "Hora de conferir: palavra que vale e que ninguém mais escreveu ganha 10 pontos; igual à de alguém, 5; em branco ou que não vale, 0.",
@@ -23,7 +23,7 @@
     "Ganha quem somar mais pontos no fim das rodadas."
   ],
   "combinados": [
-    "Combinem antes se nome de marca e palavra em outra língua valem.",
+    "Combinem antes se nome de marca e palavra em outra língua valem. Na categoria Carro, valem: é o nome dos carros.",
     "Palavra escrita com erro: combinem se vale e, no fim da rodada, escrevam juntos do jeito certo.",
     "À distância, as palavras aparecem para os outros jogadores, e cada um aparece como um bicho (Arara, Onça, Tatu…), sem nome. Mande o código só para quem a criança conhece, e combinem que os campos são só para palavras do jogo."
   ],
